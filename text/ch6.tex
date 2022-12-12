@@ -1,58 +1,51 @@
-\hinttext{!!!ACTION REQUIRED!!!}
-\hinttext{The structure I defined is generic and will most likely have to be adapted. I suggest that you skim through the pages and then clear the files \texttt{text/ch2.tex} to \texttt{text/ch7.tex} before you start writing.}
-
-
 \section{Experiment Setup}
 \label{s:Experiment-Setup}
 
-This Chapter introduces the experimental measurements of the performance of the Anomaly Detection model presented in this thesis. 
-
-\subsection{Environment and System Setup}
-\label{s:Experiment-Env}
-agilehost3.. 
-
+This Chapter introduces the experimental measurements of the performance of the Anomaly Detection model presented in Chapter [ref].
 
 \subsection{Dataset Generation for performance evaluations}
 \label{s:Experiment-Data}
-Two supervised datasets of GRB signals have been generated. As stated in Chapter 2, gamma-ray transients differ among several factors: [TODO]. The max flux set the maximum luminosity of the phenomena and so the potential amount of light captured by the instrument. If the signal is to low it will be indistinguishible from the noise. The mean of the background signal will be the reference point to tune the difficult of the problem. Two datasets of GRB simulated trials have been generated: the first dataset is composed of trials with max flux equal or greater than the background signal, while in the second dataset, the max flux can go 1 sigma below from the background level threshold. 
-The simulation tool will take in account this parameter to enable the generation of samples with different emissions. Figure [ref] shows the distribution of the max flux of the GRB population described in [ref GammaRayCatalog]. The first test set contains 209 trials with a max flux greater than the background mean level. The second test set, contains X [TODO] trails with a max flux greater than the background level - 1 sigma. The background level is the defined by the same IRF used in the training test generation, described in Chapter .. [ref]. The simulation time is limited to 500 seconds because we are interested in the first part of the signal, given the nature of the scientific use cases described in Chapter [ref]. The trigger time that defines the start of the GRB signal, is set to 250 seconds. The integration time is the same used for the training set generation for the reason stated in Chapter [ref]. The models can inference on timeseries of length equal to 5, with each point being a flux measurement integrated in 5 seconds. The stride parameter is set to 1 because this method can work with temporal bins that are statistically dependent, and this drastically reduces the time the model takes to wait for data during the online inference. Table [ref] summarizes the configuration parameters described above.  
+Two supervised datasets of GRB signals have been generated. As stated in Chapter 2, gamma-ray transients differ among several factors: [TODO]. The max flux parameter constraints the maximum luminosity of the phenomena. If the signal is to low it will be indistinguishible from the noise. The mean of the background signal will be the reference point to tune the difficult of the problem. Two datasets of GRB simulated trials have been generated: the first dataset (E) is composed of trials with a max flux greater or equal than the mean of the background signal, while for second dataset (H), the max flux can go 1 sigma below from the background level threshold. The simulation tool will take in account this parameter to enable the generation of samples with different emissions. Figure [ref] shows the distribution of the max flux of the GRB population described in [ref GammaRayCatalog]. The first test set contains 209 trials with a max flux greater than the background mean level. The second test set, contains X [TODO] trails with a max flux greater than the background level - 1 sigma. The background level is the defined by the same IRF used in the training test generation, described in Chapter .. [ref]. The simulation time is limited to 500 seconds because we are interested in the first part of the signal, given the nature of the scientific use cases described in Chapter [ref]. The trigger time that defines the start of the GRB signal, is set to 250 seconds. The integration time is the same used for the training set generation for the reason stated in Chapter [ref]. The models can inference on timeseries of length equal to 5, with each point being a flux measurement integrated in 5 seconds. The stride parameter is set to 1 because this method can work with temporal bins that are statistically dependent, and this drastically reduces the time the model takes to wait for data during the online inference. Table [ref] summarizes the configuration parameters described above.  
 A timeseries is labelled as anomalous if contains at least one point of GRB signal.
 
+\subsection{Model architecture}
+\label{s:Exp-Model-Architecture}
 
 
+\subsection{Detections}
+\label{s:Exp-Detections}
+This experiment is about testing the performances of the A.D. method against the LiMa technique described in [ref] to perform source detection. The sooner a detection is issued, sooner the other observatories can study the same source, enabling the multi-wavelength approach introduced in Chapter 2 [ref]. For this reason, the total number of 5 sigma detections in a time window is the performance metric we are interested to measure.
 
+%\subsection{Environment and System Setup}
+%\label{s:Experiment-Env}
+%agilehost3.. 
 
-\subsection{Implemented Algorithms}
-\label{s:Experiment-Algo}
-This experiment is about testing the performances of the A.D. method against the LiMa technique described in [ref] to perform source detection. The sooner a detection is issued, sooner the other observatories can study the same source, enabling the multi-wavelenght approach introduced in Chapter 2 [ref]. For this reason, the total number of 5 sigma detections in a time window, is the performance metric we are interested to measure.
 
 
 
 \section{Results}
 \label{s:Experiment-Results}
 
-Use a somewhat expressive title for each experiment. This way you may easily reference them again in the summary.
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Tmax (seconds) & 5 & 10 & 25 & 50 \\
-\hline
-Anomaly Detection & 8 & 21 & 60 & 92 \\
-\hline
-LI\&MA & 0 & 0 & 79 & 128 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-\end{document}
-
-
-
 \subsection{Online inference}
 \label{s:Online-inference}
 
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|lll|}
+\hline
+\multicolumn{3}{|c|}{\textbf{5\sigma detections}}  \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{|l|}{\cellcolor[HTML]{EFEFEF}\textbf{Model}}                         & \multicolumn{1}{l|}{\cellcolor[HTML]{EFEFEF}\textbf{A.D.}} & \textbf{Li\&Ma} \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{|l|}{\cellcolor[HTML]{EFEFEF}\textbf{Total detections number}}       & \multicolumn{1}{l|}{\cellcolor[HTML]{EFEFEF}141}           & 179             \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{|l|}{\cellcolor[HTML]{EFEFEF}\textbf{Detection mean time (seconds)}} & \multicolumn{1}{l|}{\cellcolor[HTML]{EFEFEF}48.16}         & 60.75           \\ \hline
+\end{tabular}
+\caption{Blablabla}
+\label{fig:Experiment-Results}
+\end{center}
+\end{table} 
 
 
 
