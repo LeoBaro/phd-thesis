@@ -1,52 +1,64 @@
 \hinttext{!!!ACTION REQUIRED!!!}
 \hinttext{The structure I defined is generic and will most likely have to be adapted. I suggest that you skim through the pages and then clear the files \texttt{text/ch2.tex} to \texttt{text/ch7.tex} before you start writing.}
 
-This is just an example. You may want to restructure this chapter, or even integrate it into you contribution chapter. 
 
 \section{Experiment Setup}
 \label{s:Experiment-Setup}
 
-Define the goal of the experiment. If you compare algorithms, define the metrics/techniques that you will use to compare them and why.
-
+This Chapter introduces the experimental measurements of the performance of the Anomaly Detection model presented in this thesis. 
 
 \subsection{Environment and System Setup}
 \label{s:Experiment-Env}
+agilehost3.. 
 
-Detail the properties of the environmental conditions of your experiment. What hardware did you use? What compiler?
+
+\subsection{Dataset Generation for performance evaluations}
+\label{s:Experiment-Data}
+Two supervised datasets of GRB signals have been generated. As stated in Chapter 2, gamma-ray transients differ among several factors: [TODO]. The max flux set the maximum luminosity of the phenomena and so the potential amount of light captured by the instrument. If the signal is to low it will be indistinguishible from the noise. The mean of the background signal will be the reference point to tune the difficult of the problem. Two datasets of GRB simulated trials have been generated: the first dataset is composed of trials with max flux equal or greater than the background signal, while in the second dataset, the max flux can go 1 sigma below from the background level threshold. 
+The simulation tool will take in account this parameter to enable the generation of samples with different emissions. Figure [ref] shows the distribution of the max flux of the GRB population described in [ref GammaRayCatalog]. The first test set contains 209 trials with a max flux greater than the background mean level. The second test set, contains X [TODO] trails with a max flux greater than the background level - 1 sigma. The background level is the defined by the same IRF used in the training test generation, described in Chapter .. [ref]. The simulation time is limited to 500 seconds because we are interested in the first part of the signal, given the nature of the scientific use cases described in Chapter [ref]. The trigger time that defines the start of the GRB signal, is set to 250 seconds. The integration time is the same used for the training set generation for the reason stated in Chapter [ref]. The models can inference on timeseries of length equal to 5, with each point being a flux measurement integrated in 5 seconds. The stride parameter is set to 1 because this method can work with temporal bins that are statistically dependent, and this drastically reduces the time the model takes to wait for data during the online inference. Table [ref] summarizes the configuration parameters described above.  
+A timeseries is labelled as anomalous if contains at least one point of GRB signal.
+
+
+
 
 
 \subsection{Implemented Algorithms}
 \label{s:Experiment-Algo}
+This experiment is about testing the performances of the A.D. method against the LiMa technique described in [ref] to perform source detection. The sooner a detection is issued, sooner the other observatories can study the same source, enabling the multi-wavelenght approach introduced in Chapter 2 [ref]. For this reason, the total number of 5 sigma detections in a time window, is the performance metric we are interested to measure.
 
-\hinttext{Now you need to outline the scope of the experiment. For example, by listing the algorithms that you have implemented:}
-
-In this section, we list the algorithms that we have included in our experimental study.
-
-\begin{description}
-  \item[Na\"{i}ve Space Folding] is the classic method that was originally proposed by \citeauthor{HerbertF:1965:Dune}~\cite{HerbertF:1965:Dune} to utilize the Holtzmann effect to fold space.
-  
-  \item[Post-Butlerian Algorithm:] This approach uses the extended fold space theory as described by \citeauthor{HerbertB:2002:Butlerian-Jihad}~\cite{HerbertB:2002:Butlerian-Jihad}. It relies on infinite recursion and can currently only be implemented by beings with a heightened perception through massive infusion of \emph{Spice Melange}.
-
-  \item[Ixian Inverse:] This is our new approach to fold space using an intelligent apparatus that implements the complete algorithm discussed in \autoref{s:Contribution-2-Major-2-Minor-2}.
-
-\end{description}
 
 
 \section{Results}
 \label{s:Experiment-Results}
 
 Use a somewhat expressive title for each experiment. This way you may easily reference them again in the summary.
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Tmax (seconds) & 5 & 10 & 25 & 50 \\
+\hline
+Anomaly Detection & 8 & 21 & 60 & 92 \\
+\hline
+LI\&MA & 0 & 0 & 79 & 128 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 
-\subsection{Short Distance Travel}
-\label{s:Short-Distance-Experiment}
-
-In this experiment we attempt to fold space from the planet Giedi~Prime\footnote{\url{https://en.wikipedia.org/wiki/Giedi_Prime}} to Arrakis\footnote{\url{https://en.wikipedia.org/wiki/Arrakis}}. [...]
+\end{document}
 
 
-\subsection{Long Distance Travel}
-\label{s:Long-Distance-Experiment}
 
-In this experiment we attempt to fold space from the planet Giedi~Prime to the imperial capital on Salusa~Secundus\footnote{\url{https://en.wikipedia.org/wiki/Salusa_Secundus}}. [...]
+\subsection{Online inference}
+\label{s:Online-inference}
+
+
+
+
+
+
+
 
 
 \section{Summary}
