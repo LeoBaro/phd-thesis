@@ -1,115 +1,74 @@
-\hinttext{!!!ACTION REQUIRED!!!}
-\hinttext{The structure I defined is generic and will most likely have to be adapted. I suggest that you skim through the pages and then clear the files \texttt{text/ch2.tex} to \texttt{text/ch7.tex} before you start writing.}
+The main goal of this thesis work is to address the problem of source detection, described in [ref], while overcoming the limitations of the techniques that are currently being proposed for the real-time analysis of data produced by the telescopes' of the CTAO ([ref]). In addition, since this work is framed in the context of the software development for ACADA, the software requirements described in [ref] have been taken into account. This chapter is organized as follows. Section \autoref{s:Contribution-2-anomaly-detection} will describe the proposed anomaly detection technique to adress the source detection problem. Section [ref] will describe the data pipeline that has been developed to generate input data. Section [ref] will describe the p-value analysis to associate each detection with a gaussian statistical significance. Section [ref] will investigate several problems that can arise during the telescopes observations and how those problems can affect the proposed system. 
 
-In \autoref{s:Contribution-2-Motivation} we discuss how ... \hinttext{Explain how this chapter is structured. Make sure you cover all sections!} We summarize our discussion in \autoref{s:Contribution-2-Summary}.
+\section{Scientific use cases: serendipitous discoveries and observatrion triggered by a science-alerts}
+\label{s:Contribution-2-ues-cases}
+Among the astrophysical events ...
+Transient sources...GRBs..
+Limited in time... [TODO]
+The real-time analysis of the telescopes' data allows to detect a source as soon as possible. This capability is a key feature in the context of multi-messanger and multi-wavelength astronomy because it allows to detect in real-time an astrophysical event and to communicate the finding to other observatories that, in turn, can start to observe the same sky region. This communication is in the form of a science-alert that is broadcasted into a network such as GCN [ref]. When an observatory receives a science-alert, some policies will drive the next actions depending on what the observatory was doing at that moment, on the type of the science-alert and on the observation conditions such as weather or moon phases. The method proposed in this work has been applied to two scientific use cases: serendipitous discoveries and observatrion triggered by a science-alerts. 
 
-\section{Motivation}
-\label{s:Contribution-2-Motivation}
+\subsubsection{Serendipitous discoveries}
+The probability to detect a random GRB event during an observation is very low, but still possible. When the observatory is generating catalogs of known sources, it will cover large areas of the sky for HOW MUCH time. Since the field-of-view of the telescope is larger with respect to the region of interests, the probability that an unexpected event serendipitously appears increases. In this settings, the evolution of the event could be observed from the beginning. But the source must be detected as soon as possible in order to broadcast a science-alert that will maximaze the scientific return, allowing the other observatories to follow the same event from the beginning. Figure [ref] shows a sky map in which a unexprected event appears outside the region of interest but inside the telescope's field-of-view.  
 
-Well... You have to start somewhere. Explain what you did and why. You may assume that the reader already knows the background, related works and major contribution~1.
-
-\section{Major point 1}
-\label{s:Contribution-2-Major-1}
-Develop your idea! For example, discuss the axioms that underpin the inner workings of your algorithm.
-
-In case you want to use tables, use either \texttt{tabular} or \texttt{tabularx} (fixed width) in a \texttt{table} environment. Aside from the default column types, we have configured the fixed-width column-types \texttt{L}, \texttt{C} and \texttt{R} as demonstrated in \autoref{t:Example-Table}.
-
-\begin{table}[t]
-  \centering
-  \begin{tabularx}{\textwidth}{ L{2.5cm} | R{2cm} | C{2cm} | X }
-    \textbf{Name} & \makecell[c]{\textbf{Units of }\\\textbf{Spice}\\\textbf{consumed}} & \makecell[c]{\textbf{House}\\\textbf{Harkonnen}} & \textbf{Comments} \\
-    \hline
-    Feyd-Rautha  &  19 & yes & Hey, that's me! \\
-    Paul         &  18 & no  & Heir to House Atreides \\
-    Valdimir     & 142 & yes & My boss! \\
-    Piter        & 242 & yes & Our Mentat \\
-    Shaddam IV.  & 156 & no  & Emperor of the known universe \\
-    Thufir       & 261 & no  & Mentat of the Atreides
-  \end{tabularx}
-  \caption{A very simple example table!}
-  \label{t:Example-Table}
-\end{table}
+\subsubsection{Follow-up observation triggered by a science-alert}
+In this scenario the observatory receives a science-alert. The science-alert specify the following: the type of the event, the localization map describing the source location in terms of probabilities and ... [ref]. The observatory will interrupt the current observation and change its pointing to detect the new source in the least possible amount of time. This scenario differs from the serendipitous discovery scenario in two ways: if the localization map is much bigger than the field-of-view, multiple observation following a tiling strategy as shown in fig. [ref] are required to cover the whole localization region. Another difference is that the evolution of the event can not be observed from the beginning: there's a delay between the detection of the source that triggered the science-alert and the time taken to repoint the telescopes when the science-alert is received. The latter increases the difficult of the problem because often the most energetic and luminous part of a GRB is the promt as described in chapter [ref]. 
 
 
-\subsection{Minor idea 1}
+\subsection{Limitation of the Li\&Ma and full field-of-view maximum likelihood techniques}
 \label{s:Contribution-2-Major-1-Minor-1}
-Develop your idea! For example, explain how your algorithm actually works.
+As mentioned in chapter [ref], two techniques have been investigated to be used in the real-time context. The Li\&Ma technique [ref] is ..
+This technique has some limitations that . 
+
+\section{The proposed method based on anomaly detection}
+\label{s:Contribution-1-anomaly-detection}
+This section will describe the proposed anomaly detection technique. As explained in [ref], the goal of the anomaly detection is to spot anomalies, i.e. data samples that which deviates so much from other observations as to arouse suspicions that it was generated by a different mechanism [ref]. In this context, the data being analyzed are timeseries which points represents flux measurements. As described in [ref], the flux quantity describes how much light the source is emitting. The data pipeline to obtain the timeseries will be explained in detail in the next section [ref]. The problem of source detection has been framed inside the anomaly detection framework distinguishing between:
+\begin{itemize}
+	\item normal data: background only signal. 
+	\item anomalous data: background and source signal.
+\end{itemize}
+
+
+
+
+
 
 \subsubsection{For structuring...}
 Develop your idea!
 
-\subsubsection{For structuring...}
-Develop your idea!
 
-\subsection{Minor idea 2}
-\label{s:Contribution-2-Major-1-Minor-2}
-Develop your idea! For example, explain how the theoretical limits of your approach.
+%\begin{algorithm}[t]
+%  \caption{How Bogosort works.}
+%  \label{a:Bogosort}
+%  \begin{algorithmic}[1]
+%    \REQUIRE Unsorted dataset $d$, length of dataset $n$
+%    \STATE shuffle $d$
+%%    \FOR{$i = 2 \dots n$}
+%      \IF{$d_{i-1} > d_i$}
+%        \STATE goto 1
+%      \ENDIF
+%    \ENDFOR
+%  \end{algorithmic}
+%\end{algorithm}
 
-\subsubsection{For structuring...}
-Develop your idea!
+%\begin{lstlisting}[
+%caption={Classic implementation of Bogosort.},
+%label=l:Bogosort,
+%language=Python,
+%numbers=none,
+%frame=single,
+%float
+%]
+%def is_sorted(d):
+%%    for i in range(len(d) - 1):
+%        if d[i] > d[i + 1]:
+%            return False
+%    return True
 
-\subsubsection{For structuring...}
-Develop your idea!
-
-\section{Major point 2}
-\label{s:Contribution-2-Major-2}
-Develop your idea! For example, discuss the difficulties when implementing the proposed algorithm in software.
-
-\subsection{Minor idea 1}
-\label{s:Contribution-2-Major-2-Minor-1}
-Develop your idea! For example, properties of your implementation.
-
-\subsubsection{For structuring the section...}
-Develop your idea!
-
-\subsubsection{For structuring the section...}
-Develop your idea! If you think it helps, you can use algorithms as shown below in \autoref{a:Bogosort}.
-
-\begin{algorithm}[t]
-  \caption{How Bogosort works.}
-  \label{a:Bogosort}
-  \begin{algorithmic}[1]
-    \REQUIRE Unsorted dataset $d$, length of dataset $n$
-    \STATE shuffle $d$
-    \FOR{$i = 2 \dots n$}
-      \IF{$d_{i-1} > d_i$}
-        \STATE goto 1
-      \ENDIF
-    \ENDFOR
-  \end{algorithmic}
-\end{algorithm}
-
-
-
-\subsection{Minor idea 2}
-\label{s:Contribution-2-Major-2-Minor-2}
-Develop your idea! For example, the particular properties of your implementation.
-
-\subsubsection{For structuring the section...}
-Develop your idea!
-
-\subsubsection{For structuring the section...}
-Develop your idea! If you think it may be useful, you may print excerpts from your implementation. For example, in \autoref{l:Bogosort}, we implement Bogosort in a software program. However, do not go crazy with this. The reader might now know the programming language you use. If you can use pseudo-code (\ie \texttt{\textbackslash{}begin\{algorithmic\}...\textbackslash{}end\{algorithmic\}}) instead, use it!
-
-\begin{lstlisting}[
-caption={Classic implementation of Bogosort.},
-label=l:Bogosort,
-language=Python,
-numbers=none,
-frame=single,
-float
-]
-def is_sorted(d):
-    for i in range(len(d) - 1):
-        if d[i] > d[i + 1]:
-            return False
-    return True
-
-def bogosort(d):
-    while not is_sorted(d):
-        random.shuffle(d)
-    return data
-\end{lstlisting}
+%def bogosort(d):
+%    while not is_sorted(d):
+%5        random.shuffle(d)
+%    return data
+%\end{lstlisting}
 
 
 \section{Summary}
