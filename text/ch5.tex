@@ -1,18 +1,20 @@
-The main goal of this thesis work is to address the problem of source detection, described in [ref], while overcoming the limitations of the techniques that are currently being proposed for the real-time analysis of data produced by the telescopes' of the CTAO ([ref]). In addition, since this work is framed in the context of the software development for ACADA, the software requirements described in [ref] have been taken into account. This chapter is organized as follows. Section \autoref{s:Contribution-2-anomaly-detection} will describe the proposed anomaly detection technique to adress the source detection problem. Section [ref] will describe the data pipeline that has been developed to generate input data. Section [ref] will describe the p-value analysis to associate each detection with a gaussian statistical significance. Section [ref] will investigate several problems that can arise during the telescopes observations and how those problems can affect the proposed system. 
+The main goal of this thesis work is to address the problem of source detection, described in [ref], while overcoming the limitations of the techniques that are currently being proposed for the real-time analysis of data produced by the telescopes' of the CTAO. In addition, since this work is framed in the context of the software development for ACADA, the software requirements described in [ref] have been taken into account. This chapter is organized as follows. Section \autoref{s:Contribution-2-anomaly-detection} will describe the proposed anomaly detection technique to adress the source detection problem. Section [ref] will describe the data pipeline that has been developed to generate input data. Section [ref] will describe the p-value analysis to associate each detection with a gaussian statistical significance. Section [ref] will investigate several problems that can arise during the telescope observations and how those problems can affect the proposed system. 
 
-\section{Scientific use cases: serendipitous discoveries and observatrion triggered by a science-alerts}
+\section{Scientific use cases: serendipitous discoveries and observation triggered by a science alert}
 \label{s:Contribution-2-ues-cases}
 Among the astrophysical events ...
 Transient sources...GRBs..
 Limited in time... [TODO]
-The real-time analysis of the telescopes' data allows to detect a source as soon as possible. This capability is a key feature in the context of multi-messanger and multi-wavelength astronomy because it allows to detect in real-time an astrophysical event and to communicate the finding to other observatories that, in turn, can start to observe the same sky region. This communication is in the form of a science-alert that is broadcasted into a network such as GCN [ref]. When an observatory receives a science-alert, some policies will drive the next actions depending on what the observatory was doing at that moment, on the type of the science-alert and on the observation conditions such as weather or moon phases. The method proposed in this work has been applied to two scientific use cases: serendipitous discoveries and observatrion triggered by a science-alerts. 
+The real-time analysis of the telescopes' data allows us to detect a source as soon as possible. This capability is a key feature in the context of multi-messenger and multi-wavelength astronomy because it allows to detect in real-time an astrophysical event and communicates the finding to other observatories that, in turn, can start to observe the same sky region. This communication is in the form of a science alert broadcasted into a network such as GCN [ref]. When an observatory receives a science alert, some policies will drive the next actions. They depend on what the observatory was doing at that moment, the type of the science alert, and the observation conditions such as weather or moon phases. The method proposed in this work has been applied to two scientific use cases: serendipitous discoveries and observation triggered by a science-alerts. 
 
 \subsubsection{Serendipitous discoveries}
-The probability to detect a random GRB event during an observation is very low, but still possible. When the observatory is generating catalogs of known sources, it will cover large areas of the sky for HOW MUCH time. Since the field-of-view of the telescope is larger with respect to the region of interests, the probability that an unexpected event serendipitously appears increases. In this settings, the evolution of the event could be observed from the beginning. But the source must be detected as soon as possible in order to broadcast a science-alert that will maximaze the scientific return, allowing the other observatories to follow the same event from the beginning. Figure [ref] shows a sky map in which a unexprected event appears outside the region of interest but inside the telescope's field-of-view.  
+The field of view of the telescope is larger than the region of interest. The probability of a serendipitous GRB event appearing in the field of view during an observation is very low but still possible. When the observatory generates catalogs of known sources, it will cover large areas of the sky for a long time, increasing the probability of seeing a serendipitous event. The event must be detected as soon as possible to broadcast a science alert to other observatories to follow the same event to enable multi-wavelength and multi-messenger analysis. Figure [ref] shows a sky map in which an unexpected event appears outside the region of interest but inside the telescope's field of view.  
 
-\subsubsection{Follow-up observation triggered by a science-alert}
-In this scenario the observatory receives a science-alert. The science-alert specify the following: the type of the event, the localization map describing the source location in terms of probabilities and ... [ref]. The observatory will interrupt the current observation and change its pointing to detect the new source in the least possible amount of time. This scenario differs from the serendipitous discovery scenario in two ways: if the localization map is much bigger than the field-of-view, multiple observation following a tiling strategy as shown in fig. [ref] are required to cover the whole localization region. Another difference is that the evolution of the event can not be observed from the beginning: there's a delay between the detection of the source that triggered the science-alert and the time taken to repoint the telescopes when the science-alert is received. The latter increases the difficult of the problem because often the most energetic and luminous part of a GRB is the promt as described in chapter [ref]. 
 
+
+
+\subsubsection{Follow-up observation triggered by a science alert}
+In this scenario, the observatory receives a science alert. The science alert specifies the type of the event; the localization map that describes the source location in terms of probabilities and ... [ref]. The observatory will interrupt the current observation and change its pointing to detect the new source in the least possible time. This scenario differs from the serendipitous discovery scenario in two ways: if the localization map is much bigger than the field-of-view, multiple follow-up observations with a tiling strategy \cite{bulgarelli2015science} are required to cover the whole localization region. Another difference is that the event's evolution can not be observed from the beginning. There's a delay between detecting the source that triggered the science alert and the time the telescopes take to change their pointing to a new sky region. Since the event's prompt decay over time ([ref]), the signal is fainter and can disappear within the background.
 
 \subsection{Limitation of the Li\&Ma and full field-of-view maximum likelihood techniques}
 \label{s:Contribution-2-Major-1-Minor-1}
@@ -21,10 +23,30 @@ This technique has some limitations that .
 
 \section{The proposed method based on anomaly detection}
 \label{s:Contribution-1-anomaly-detection}
-This section will describe the proposed anomaly detection technique. As explained in [ref], the goal of the anomaly detection is to spot anomalies, i.e. data samples that which deviates so much from other observations as to arouse suspicions that it was generated by a different mechanism [ref]. In this context, the data being analyzed are timeseries which points represents flux measurements. As described in [ref], the flux quantity describes how much light the source is emitting. The data pipeline to obtain the timeseries will be explained in detail in the next section [ref]. The problem of source detection has been framed inside the anomaly detection framework distinguishing between:
+This section will describe the proposed anomaly detection technique. As explained in [ref], the goal of anomaly detection is to spot anomalies, i.e., data samples that deviate so much from other observations as to arouse suspicions that they were generated by a different mechanism [ref]. The problem can be addressed with several approaches as explained in [ref]. The proposed anomaly detection technique works on time series. The time series data are flux measurements over time. As described in [ref], the flux quantity describes how much light a source is emitting. In this anomaly detection context:
 \begin{itemize}
-	\item normal data: background only signal. 
-	\item anomalous data: background and source signal.
+	\item normal data: is a background-only signal. 
+	\item anomalous data: is background and source signal.
+\end{itemize}
+The technique is based on an Encoder-Decoder scheme for Anomaly Detection that learns to reconstruct \textit{normal} time-series behavior and thereafter uses reconstruction error to detect anomalies. Consider a time-series $X = \{x(1), x(2), ..., x (L)\}$ of length $L$, where each point $x(i) in R_m$ is an m-dimensional vector of fluxes for three  energy ranges at time-instance $t_i$. We consider the scenario where multiple such time series are  obtained by taking a window of length $L$ over a larger time series. \autoref{s:Contribution-1-data-pipeline} will further describe the input data. The Autoencoder will be trained on normal (background-only) samples to minimize the reconstruction error of the decoding step. A sample is classified as an anomaly if the autoencoder outputs a reconstruction error greater than a certain threshold. The threshold parameter is a key parameter that can be used to associate the output of the autoencoder to a statistical pipeline that outputs the corresponding gaussian sigma confidence level of a positive detection. 
+
+\subsection{Challenges}
+The main challenges we overcame are the following: [todo]
+\subsubsection{The background level is not constant}
+multiple models are trained offline for each IRF (background level).
+\subsubsection{How to assign a statistical significance to positive classifications}
+p-value analysis
+\subsection{Overcome the limitations of Li\&Ma}
+Short term analysis and very short term analysis.
+\subsection{How to tackle the problem of non-stationarity of the data}
+online learning
+
+\subsection{Advantages}
+\begin{itemize}
+    \item Which limitations of previous techniques do overcome?
+    \item Semi-supervised learning
+    \item Automatic background estimation
+    \item No GRB modeling
 \end{itemize}
 
 
@@ -32,9 +54,68 @@ This section will describe the proposed anomaly detection technique. As explaine
 
 
 
-\subsubsection{For structuring...}
-Develop your idea!
+\subsection{The data pipeline}
+\label{s:Contribution-1-data-pipeline}
+Photometry is a technique to measure the flux of electromagnetic radiation emitted by celestial objects. This is typically done by counting the number of gamma-ray photons emitted from a source and measuring their energy. It is an essential tool in analyzing data obtained by telescopes and satellites, including those that observe gamma rays. The flux of electromagnetic radiation is typically measured in units of energy per unit of time per unit area. The spectrum of a gamma-ray source is a plot of the flux as a function of energy. By measuring the spectrum, astronomers can determine the distribution of energies of the photons emitted by the source and learn about the physical processes responsible for their production \cite{giommi2012software}. The data pipeline developed in this work is responsible for generating the multivariate time series that represent the spectrum of the signal. The data that is needed for the photometry analysis is produced with simulations.  
 
+\subsubsection{The photons list simulator module}
+A photon list represents the Cherenkov photons detected by the telescope array. It's a list of reconstructed high-energy photons detected at a particular timestamp, along with their reconstructed energy and direction of arrival with the corresponding errors. The background signal is composed of high-energy photons emitted by astronomical sources and particles that are not gamma particles but are wrongly reconstructed. 
+Monte Carlo simulation techniques are commonly used to generate these photon lists, as they allow for incorporating various physical processes. The simulator \cite{dipiano2022ctasagsci} has been adopted and improved. Several parameters can customize the physical processes. 
+
+\begin{itemize}
+    \item simulation duration or tobs (s): this parameter is used to set the duration of the observation. 
+    \item the instrument response function or irf:  different types of telescopes and array configurations have different irf. The IRF used for running the simulation is called $North_z40_5h_LST$ which models the response of an LST-1 telescope observing at 40° z [todo] in the north hemisphere. 
+    \item minimum energy, maximum energy and the size of the field-of-view or emin (TeV), emax (TeV) and roi (degrees): those set cuts applied on the simulated photons.
+    \item simulation type or simtype: it decides if a GRB model is added to the background simulation.
+    \item GRB template: it defines the spectrum and the evolutionary process of the event. [todo] ref. 
+    \item GRB start or onset (s): the delay with which the GRB event will appear.
+    \item offset (degrees): the sky location of the point-like GRB event. It is expressed by adding to the center of the map an offset.
+\end{itemize}
+
+To speed up the simulation process, the python code of the simulation script has been rewritten to support batch parallelization with SLURM. 
+
+\subsubsection{Integrator module}
+This module generates the multivariate flux time series. It integrates the gamma-ray photons along three dimensions: space, time, and energy, described by the following parameters:
+\begin{itemize}
+    \item region radius (degrees): only photons which arrival direction falls into the circular region defined by a sky position and a region radius.
+    \item integration time (s): the number of photons is aggregated each \textit{integration time} seconds. With a 500 seconds long photon list and an integration time of 5 seconds, 100 time bins of photons count are obtained. 
+    \item energy bins (TeV): within each time bin, the photon counts are further aggregated in the energy domain. Three energy bins have been defind.
+\end{itemize}
+
+More on integration time [todo]
+More on energy bins generation [todo]  $["EB_0.04-0.117","EB_2-0.117-0.342","EB_0.342-1"]$
+The result of the integration is a multivariate time series of shape ([todo]). The next step is transforming the photon counts into flux measurements [todo]. 
+The normalization performed above takes into account the degradation of the irf, which increases while moving away from the telescope's pointing. This allows us to extract flux measurements from multiple regions in the sky in parallel, resulting in a significant boost in the data generation rate.  
+
+\subsubsection{Time series extractor module}
+At the end of the data generation pipeline, the time series extractor module extracts subsequences of the time series generated by the step before. A subwindow of length TSL (time series length) slides over the original time series with a specific stride. At each step, a time series of length (TSL, 3) is extracted. 
+As we will see in Chapter [ref], we will need our samples to be statistically independent, i.e. having a stride equal to tsl. During inference, we will need to increase our detection rate, so a stride equal to one is preferred. Let's keep in mind that, at the end of this data pipeline, a semi-supervised dataset of background-only samples is generated. Each sample is a multivariate time series of length TSL, over three channels, one for each energy bin. Each time series point is a flux measurement aggregating IT (IT=integration time) seconds of the original time series. Figure [ref] shows some generated samples.
+
+\subsection{P-value analysis}
+The goal of the p-values analysis is to obtain the threshold that can be used to classify the samples as anomalies with a certain σ level (Parmiggiani et al., 2021) or in contrary, to associate with each reconstruction error a statistical confidence level (of a positive classification). Using the hypothesis testing framework, the distribution $\phi$ of the reconstruction errors of the autoencoder on a dataset composed of background-only data samples, is computed to evaluate the p-values. The p-value defines the probability of obtaining a value equal or greater than a threshold h when the null hypothesis is true (i.e. the grb signal is not present):
+
+\begin{math}
+    p(ts \geq h) = \int_{h}^{\infty} \phi(x) \,dx
+\end{math}
+
+The reconstruction error is the test statistic (TS). It can be mapped to a p-value, by the inverse cumulative distribution function. [todo - code snippet in appendix?] Fig \ref{fig:ts-distribution-and-p-values-rnn-it-5} shows the TS distribution (i.e. reconstruction errors distribution) and the corresponding p-values. To reach the desired $\5sigma$
+ level, about $1e7$ trials need to be simulated and processed by each model. The simulation script using the \cite{dipiano2022ctasagsci} library has been rewritten to exploit batch parallelization using Slurm. The p-value analysis must be performaed every time the model's weights change and for each night sky background level and the dataset to process is large. To cope with these run-time requirements, the library developed for this work has been implemented as effiencient as possible. Each slurm job take a batch of photons lists, integrate the photon counts, compute the flux, extract the time series, scale the data and apply the model's inference. The time took to process $1e7$ trials (about $3.5 TB$ of data), using 100 jobs on 60 Intel(R) Xeon(R) Gold 6240 CPU @ 2.60GHz cores, was about 48 hours. 
+ 
+The p-value, in turn, is mapped to a gaussian level significance, [todo]. The transformation can be reversed to obtain the TS threshold value for a given $\sigma $significance level. In this case, if there's no corresponding exact p-value, it can be interpolated between the closest two. 
+
+\subsection{Autoencoder training}
+\subsubsection{Training dataset}
+A semi-supervised dataset of background-only time series has been generated by integrating and extracting subsequences from multiple simulated trials of photon lists. Two training datasets have been used, of multivariate time series with different integration times IT=5 (short term analysis) and IT=1 (very-short term), used to train and evaluate the models against the Li\&Ma technique. This parameter tune also the bootstrap time of the inference since the model needs to wait for at least 25 seconds (5 points, each one representing 5 seconds of data) for IT=5 and 5 seconds for IT=1 before obtaining a single sample. The next samples are obtained after IT seconds. The resulting shape of the training set is: $(48960, 5, 3)$ and of the validation set is: $(12240, 5, 3)$. The training data is normalized in the $[0, 1]$ interval with a MinMax scaler.
+
+\subsubsection{Architectures}
+An Autoencoder can be implemented with different types of layers. Three types of Autoencoder models have been investigated: CNN, RNN, and LSTM resulting in different performance outcomes, both in terms of false positive minimization and training requirements. Using an Autoencoder with CNN layers for multivariate time series data can be particularly useful if the input data has spatial correlations that can be captured using local filters through 1D-convolution. On the other hand, when using an autoencoder with RNN layers for multivariate time series data, the RNN layers can capture temporal dependencies in the data. This can be particularly useful if the input data has a sequential structure, such as natural language or speech, or if the input data has temporal correlations that can be captured using feedback connections. 
+As we'll see in Chapter [ref], we want the model to perform online learning as well, so we want the models to be small concerning the number of layers and number of neurons but still be able to capture patterns. The time series data has a shape of (5, 3) which makes a simple architecture a better choice. 
+
+\subsubsection{Training}
+The loss is as a weighted MSE loss ($\sum_{i=1}^{D}w_i*(x_i-y_i)^2$ with $w=[1./2, 1./3, 1./6]$) to give more importance to prediction errors in the lower energy ranges, that contain the majority of the signal. Doing so the the training time is reduced. The training is stopped when the validation loss does not decrease for 5 epochs. 
+
+
+Fig [ref] shows the training and validation losses for the models. During validation, dropout is not enabled, leading to greater results on the validation set. 
 
 %\begin{algorithm}[t]
 %  \caption{How Bogosort works.}
@@ -47,7 +128,6 @@ Develop your idea!
 %        \STATE goto 1
 %      \ENDIF
 %    \ENDFOR
-%  \end{algorithmic}
 %\end{algorithm}
 
 %\begin{lstlisting}[
