@@ -92,16 +92,21 @@ At the end of the data generation pipeline, the time series extractor module ext
 As we will see in Chapter [ref], we will need our samples to be statistically independent, i.e. having a stride equal to tsl. During inference, we will need to increase our detection rate, so a stride equal to one is preferred. Let's keep in mind that, at the end of this data pipeline, a semi-supervised dataset of background-only samples is generated. Each sample is a multivariate time series of length TSL, over three channels, one for each energy bin. Each time series point is a flux measurement aggregating IT (IT=integration time) seconds of the original time series. Figure [ref] shows some generated samples.
 
 \subsection{P-value analysis}
-The goal of the p-values analysis is to obtain the threshold that can be used to classify the samples as anomalies with a certain σ level (Parmiggiani et al., 2021) or in contrary, to associate with each reconstruction error a statistical confidence level (of a positive classification). Using the hypothesis testing framework, the distribution $\phi$ of the reconstruction errors of the autoencoder on a dataset composed of background-only data samples, is computed to evaluate the p-values. The p-value defines the probability of obtaining a value equal or greater than a threshold h when the null hypothesis is true (i.e. the grb signal is not present):
+Scientists' goal is not the verification but the falsification of the initial hypothesis (Popper, 1976). Hypothesis testing starts by presuming the null hypothesis, or no association between the predictor and outcome variables in the population. Based on the data collected, statistical tests are used to determine whether there is sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis. The standard for these tests is shown as the level of statistical significance (p-values). A type I error (false-positive) occurs if one rejects a null hypothesis that is actually true. A type II error (false-negative) occurs if one fails to reject a null hypothesis that is actually false.
+Let's define: P as the probability of committing a type I error (rejecting the null hypothesis when it is actually true) and Q as the probability of making a type II error (failing to reject the null hypothesis when it is actually false).
+In this work we want to favour minimizing Q over P, in other terms, we want to minimize the false positive rate: we don't want the system to issue false science alerts to the scientific community.
+The p-value is the standardised probability of obtaining the study results by chance if the null hypothesis is true. The null hypothesis is rejected in favor of the alternative hypothesis if the p-value is less than the predetermined level of statistical significance. 
 
 \begin{math}
     p(ts \geq h) = \int_{h}^{\infty} \phi(x) \,dx
 \end{math}
 
-The reconstruction error is the test statistic (TS). It can be mapped to a p-value, by the inverse cumulative distribution function. [todo - code snippet in appendix?] Fig \ref{fig:ts-distribution-and-p-values-rnn-it-5} shows the TS distribution (i.e. reconstruction errors distribution) and the corresponding p-values. To reach the desired $\5sigma$
- level, about $1e7$ trials need to be simulated and processed by each model. The simulation script using the \cite{dipiano2022ctasagsci} library has been rewritten to exploit batch parallelization using Slurm. The p-value analysis must be performaed every time the model's weights change and for each night sky background level and the dataset to process is large. To cope with these run-time requirements, the library developed for this work has been implemented as effiencient as possible. Each slurm job take a batch of photons lists, integrate the photon counts, compute the flux, extract the time series, scale the data and apply the model's inference. The time took to process $1e7$ trials (about $3.5 TB$ of data), using 100 jobs on 60 Intel(R) Xeon(R) Gold 6240 CPU @ 2.60GHz cores, was about 48 hours. 
- 
-The p-value, in turn, is mapped to a gaussian level significance, [todo]. The transformation can be reversed to obtain the TS threshold value for a given $\sigma $significance level. In this case, if there's no corresponding exact p-value, it can be interpolated between the closest two. 
+For example, we can reject the null hypothesis if the p-value is less than $3x10^-7$ meaning $> 5\sigma$ confidence in the alternative hypothesis. 
+Results with p-values lower than $3x10^-7$ can still be false positives every once in $3x10^7$ measures ($+-$ statistical fluctuations).
+The false alarm rate (FAR) is defined as the number of false alarms (i.e., false positives) per the total number of times the event didn't happen. A false alarm rate is also known as the probability of false detection. To not be confused with the false alarm ratio (also abbreviated as FAR), which is the number of false alarms per the total number of warnings or alarms.
+The p-values analysis allows us to obtain the threshold that can be used to classify the samples as anomalies with a certain $\sigma$ level (Parmiggiani et al., 2021) or in contrary, to associate with each reconstruction error a statistical confidence level (of a positive classification). Using the hypothesis testing framework, the distribution $\phi$ of the reconstruction errors of the autoencoder on a dataset composed of background-only data samples, is computed to evaluate the p-values. The p-value defines the probability of obtaining a value equal or greater than a threshold h when the null hypothesis is true (i.e. the grb signal is not present). 
+To compute a threshold that corresponds to a desired $\sigma$ level: we take the one-tailed probability that we know it corresponds to the $\sigma$ level, then we compute the corresponding p-value with $(1-p)/2$. 
+The reconstruction error is the test statistic (TS). It can be mapped to a p-value, by the inverse cumulative distribution function. [todo - code snippet in appendix?] Fig \ref{fig:ts-distribution-and-p-values-rnn-it-5} shows the TS distribution (i.e. reconstruction errors distribution) and the corresponding p-values. To reach the desired $\5sigma$ level, about $1e7$ trials need to be simulated and processed by each model. The simulation script using the \cite{dipiano2022ctasagsci} library has been rewritten to exploit batch parallelization using Slurm. The p-value analysis must be performaed every time the model's weights change and for each night sky background level and the dataset to process is large. To cope with these run-time requirements, the library developed for this work has been implemented as effiencient as possible. Each slurm job take a batch of photons lists, integrate the photon counts, compute the flux, extract the time series, scale the data and apply the model's inference. The time took to process $1e7$ trials (about $3.5 TB$ of data), using 100 jobs on 60 Intel(R) Xeon(R) Gold 6240 CPU @ 2.60GHz cores, was about 48 hours. 
 
 \subsection{Autoencoder training}
 \subsubsection{Training dataset}
@@ -149,6 +154,29 @@ Fig [ref] shows the training and validation losses for the models. During valida
 %5        random.shuffle(d)
 %    return data
 %\end{lstlisting}
+
+
+\subsection{Non-stationary settings and Online Learning}
+During inference the model will process the real-time data generated by the telescopes during an observation. In this settings, the stocastic process that generates the data
+is not stationary and concept drifts can affect the models' performances. For example, weather changes can degradate the istrument's reponse function and hardware or software malfuctions can arise. 
+In addition, the zenith of the observation changes during time, leading to changes in the background level.  
+
+Online learning is a type of machine learning that allows for the analysis and modeling in a streaming fashion, as opposed to batch processing. 
+
+Concept drift refers to the phenomenon of a dataset's statistical properties changing over time, which can lead to the degradation of the performance of machine learning models trained on such data. In the context of online learning, concept drift can be particularly problematic as the model is continuously being updated with new data, and a sudden shift in the data distribution can lead to a rapid decline in performance.
+
+Neural networks are particularly vulnerable to concept drift, as they rely on the assumption that the data distribution remains constant during training and inference. In the presence of concept drift, the model may continue to make predictions based on outdated information, leading to a decrease in accuracy.
+
+There are several approaches to address concept drift in online learning for neural networks. One approach is to continuously monitor the performance of the model and detect when a drift has occurred, using techniques such as drift detection methods (DDMs). DDMs can be classified into two categories: instance-based DDMs and feature-based DDMs. Instance-based DDMs monitor the model's error rate on a sliding window of the most recent instances, while feature-based DDMs monitor the distribution of the input features.
+
+Another approach is to use adaptive neural networks, which are able to adapt to changes in the data distribution through the use of techniques such as weight consolidation and weight perturbation. These methods allow the network to maintain a "memory" of past data and adapt to new information, mitigating the effects of concept drift.
+
+Overall, addressing concept drift in online learning for neural networks is a challenging but important problem, as it can significantly impact the performance of the model. Further research in this area will be critical for the development of more robust and reliable machine learning models for online learning.
+
+References:
+
+Gama, J., Zliobaite, I., Bifet, A., Pechenizkiy, M., & Bouchachia, A. (2014). A survey on concept drift adaptation. ACM Computing Surveys (CSUR), 46(4), 44.
+Bifet, A., & Gama, J. (2010). Adaptive random forests for evolving data streams. In Machine learning and knowledge discovery in databases (pp. 449-456). Springer, Berlin, Heidelberg.
 
 
 \section{Summary}
