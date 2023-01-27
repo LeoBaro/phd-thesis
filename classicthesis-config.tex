@@ -114,7 +114,7 @@
 \newcommand{\myfloatalign}{\centering} % to be used with each float for alignment
 \usepackage{makecell}
 \usepackage{multirow}
-\usepackage{caption}
+\usepackage[width=.75\textwidth]{caption}
 % Thanks to cgnieder and Claus Lahiri
 % http://tex.stackexchange.com/questions/69349/spacedlowsmallcaps-in-caption-label
 % [REMOVED DUE TO OTHER PROBLEMS, SEE ISSUE #82]    
@@ -282,6 +282,7 @@
 \usepackage{setspace}
 \usepackage{fp}
 \usepackage{soul}
+\usepackage{graphicx}
 
 \usepackage{textcomp}
 
@@ -323,3 +324,26 @@
 \newcommand{\hinttext}[1]{\textcolor{Gray!70!Red}{#1}}
 
 % ****************************************************************************************************
+
+
+\usepackage{diagbox}
+\usepackage{svg}
+\usepackage{bm}
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\usepackage{gensymb}
+
+% ---------------- chapter abstracts
+\newenvironment{chapabstract}
+{
+\vspace{1mm}
+\list{}{
+\setlength{\leftmargin}{1cm}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item\relax
+}
+{\par}
+\makeatother
+
