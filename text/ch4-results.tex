@@ -1,6 +1,6 @@
 \begin{chapabstract}
 \small{
-This chapter introduces the experimental measurements of the performance of the Anomaly Detection technique presented in \autoref{c:Contribution-2}.
+This chapter presents the several results experimental measurements of the performance of the Anomaly Detection technique presented in \autoref{s:contribution}.
 }\\
 \begin{center}
 \noindent\makebox[0.8\linewidth]{\rule{0.66\paperwidth}{0.4pt}}
@@ -8,65 +8,93 @@ This chapter introduces the experimental measurements of the performance of the 
 \vspace{1cm}
 \end{chapabstract}
 
-\section{Experiment Setup}
+\section{Experiments setup}
 \label{s:Experiment-Setup}
- The goal is to measure the performances of the A.D. technique against the Li\&Ma technique described in \autoref{ss:li-ma} to perform source detection. In particular, we are interested in applying the A.D. technique in the short-term and very short-term scenarios, in which the Li\&Ma analysis is not always applicable due to few photon counts. The integration times are set to 5 seconds and 1 second to simulate these settings. As stated in \autoref{s:contribution-2-use-cases}, the A.D. method is applied to two scientific use cases: serendipitous discoveries and observation triggered by a science-alerts. In the serendipitous discoveries settings, a GRB appears in the telescope's field of view; hence the totality of the event is observed. When the observatory reacts to a science alert, the telescopes will change their pointing to observe a sky region in which the GRB event is already started. The time taken to receive the science alert, change the pointing, and wait for enough data to perform the first analysis is variable: four values have been considered to model this delay: 15, 30, 60, and 120 seconds. 
+This chapter presents the results of a study that aimed to develop an anomaly detection technique for addressing the real-time source detection problem in the context of the Cherenkov Telescope Array Observatory (CTAO). As outlined in \autoref{s:contribution}, the proposed anomaly detection technique is based on an autoencoder model. Two autoencoder architectures based on convolutional and recurrent layers have been investigated. The comparison of their performances concerning standard machine learning metrics will be presented in this chapter. A p-value statistical analysis was performed to determine the classification thresholds the models can use to associate $5\sigma$ statistical significances to positive detections. This chapter will also present the results of these analyses. 
+This chapter's core focus is to verify if the proposed technique that overcomes the limitations of the standard analyses presented in \autoref{ss:li-ma} and \autoref{ss:ffov-ml} obtains better performances in practice. Key performance indicators (KPIs) have been defined in the context of two scientific use cases: \textit{serendipitous discovery} and \textit{follow-up observations}, introduced in \autoref{s:contribution-1-use-cases}. The results have been compared against the performances of the Li\&Ma analysis technique. The KPIs were first evaluated in the short-term scenario, using an integration time of 5 seconds meaning that each point of the sub-sequences aggregates 5 seconds of data. Furthermore, the same evaluations were repeated in the very short-term scenario, using an integration time of 1 second. The next section will re-introduce the scientific use cases of serendipitous discovery and follow-up observations, highlighting the assumptions and the experiments' setup.
 
-As explained in \autoref{s:contribution-2-use-cases}, the sooner a detection is issued, the sooner other observatories can study the same source. Hence, the performances are measured regarding how fast the techniques are to issue $5\sigma$ detections and the number of those detections. The following section describes the test set generation process.
+\subsection{Scientific use cases and assumptions}
+The serendipitous discoveries use case models the scenario in which the telescopes are observing a certain sky region, and an unexpected event is seen in the field of view. This kind of discovery is possible even though the probability of a serendipitous GRB event appearing in the field of view during an observation is very low. Indeed, telescopes can systematically observe large sky regions, for example, during surveys, increasing the probability of serendipitous discoveries. Such events are scientifically crucial because the overall evolution of the GRB event can be observed from the beginning. To maximize the scientific return, detecting the serendipitous source should be addressed as soon as possible to let other observatories acknowledge the discovery through a science alert broadcasted to the scientific community. By doing so, the same events can be studied with other instruments, exploring different wavelengths or messengers. 
+The telescope's field of view (FOV) is larger than the region of interest (ROI). Considering only one ROI, the probability the serendipitous source will appear exactly in its center is even lower. One way to mitigate the problem is to use several ROIs as shown by \autoref{fig:rings}. The problem with this approach is the significant increase in the number of analysis trials, which must be considered as a post-trials probability. In the context of this work, another assumption is made, a blind-search analysis applied in the whole field of view in order to localize candidate sources in the least possible amount of time. One example of blind-search implementation is provided by CTools \cite{Knodlseder_2016}, executing a peak-detection algorithm on smoothed count maps with a localization acceptance threshold above a given significance. It is assumed that the blind-search analysis will always find the region that contains the GRB event in its center for each GRB event considered in the performance analysis. It is also assumed that blind-search will always take a fixed time of 10 seconds to find the region. 
+
+The observatory must not only be the sender of scientific alerts, but it must be capable of receiving and reacting to external ones. The follow-up observation use case models the scenario in which the observatory receives a science alert and changes the pointing of its telescope to a new sky region to detect the event. Several considerations should be made. First of all, the time that passes from the event's start and the taking of the first photon counts, is variable. It depends on two factors: the time to receive the scientific alert and the time the telescopes take to change the pointing. This delay has been considered with four different values: 25, 50, 75, and 100 seconds. After this delay, once the required data is obtained, the analysis techniques can start to perform classifications. Unlike the serendipitous discovery scenario, the evolution of the GRB event cannot be observed from the beginning. The luminosity of a GRB event tends to decrease over time, increasing the difficulty of detection. Another factor to consider is the localization error on the position of the source provided by the received scientific alert. This error can be smaller than the field of view or much larger, as in the case of a gravitational-wave alert. The latter case would require multiple observations performed with a tiling strategy \cite{di2020detection}, but this is outside of the scope of this work. If the localization error within the field of view must be covered by multiple ROIs, the blind-search approach used in the serendipitous scenario will also be considered here.   
+
  
-\subsection{Test set generation for performance evaluations}
+\subsection{Test set generation}
 \label{s:Experiment-Data}
-The CTAO collaboration provides a Gamma-ray catalog providing almost 20 thousand GRB templates of known events [todo]. As stated in \autoref{c:Background}, Gamma-ray bursts are characterized by several key properties, including duration, prompt emission, and peak flux. The latter is a measure of the amount of energy that is emitted during the prompt gamma-ray emission. It is usually measured in units of $erg/s/cm^2$ and is one of the most important parameters for characterizing the luminosity of a GRB. GRBs can have a wide range of peak fluxes, from as low as $10^-9 erg/s/cm^2$ to as high as $10^-5 erg/s/cm^2$, depending on the distance and the intrinsic properties of the GRB. If the luminosity is too low, the GRB event will be indistinguishable from the background noise. Since the instrument response function that defines the background noise is fixed ($North\_z40\_5h\_LST$) there is no reason to simulate the entire GRB catalog since most of the GRBs will be impossible to detect. For these reasons, the mean of the background level has been considered a threshold to limit the number of simulations. In particular, a test set has been generated simulating all the templates whose peak flux is equal to greater to the background level mean minus $1\sigma$, to take into account the background fluctuations. Figure~\ref{f:exp-max-flux-distribution-E} shows the distribution of the peak flux of each GRB template and highlights the selected set. As explained in \autoref{dl3-simulator}, the simulation tool generates a photons list starting from a GRB template representing the GRB events seen by the telescopes as a list of photons whose energy and arrival direction is reconstructed. The simulation tool has been used to generate one simulated trial for each selected template. The resulting test set contains 419 trials with a peak flux in the interval $[2.6785e-10, \infty]$.
-\begin{figure}[t]
+The test set used for the performance evaluation of the proposed anomaly detection method is a supervised data set containing two classes of samples. The first class of samples has been generated considering the background model in the simulations. The second class of samples has been generated considering the background and source models in the simulations. The templates used for the Gamma-Ray Bursts (GRBs) simulations were taken from the POSyTIVE catalog. The mock GRB population used by POSyTIVE is calibrated using a 40-year dataset of multi-wavelength GRB observations \cite{Bernardini_2019}, providing about 20 thousand GRB templates of known events.
+As stated in \autoref{s:Gamma-Ray-Bursts}, GRBs are characterized by several key properties, including duration and peak flux. The latter measures the maximum energy level emitted by the event. It is usually measured in units of $erg/s/cm^2$ and is one of the most important parameters for characterizing the luminosity of a GRB. GRBs can have a wide range of peak fluxes, from as low as $10^-9 erg/s/cm^2$ to as high as $10^-5 erg/s/cm^2$, depending on the distance and its intrinsic properties. If the luminosity is too low, the GRB event will be indistinguishable from the background noise. For this reason, but also computational resource limitations, only a subset of the entire catalog has been simulated. 
+The mean of the background level has been considered a threshold to limit the number of simulations. The test set has been generated simulating all the templates whose peak flux is greater or equal to the background level mean minus $1\sigma$, to account for the background fluctuations. Figure~\ref{f:exp-max-flux-distribution-E} shows the distribution of the peak flux of each GRB template and highlights the selected set. As explained in \autoref{dl3-simulator}, the simulation tool generates a photons list, i.e., a list of photons whose energy and arrival direction are reconstructed. Only the GRB afterglow model has been simulated since the prompt models were not available at the time of writing. The simulation tool has been used to generate one simulated trial for each selected template. The resulting test set contains 419 trials with a peak flux in the interval $[2.6785e-10, \infty]$.
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=1\textwidth]{figures/experiments/templates_max_flux_distributions.png}
-\caption{The distribution of the peak flux for each GRB template. The selected templates are 419 and their peak fluxes are within the $[2.6785e-10, \infty]$ range.}
+\captionsetup{width=0.9\linewidth}
+\caption{The distribution of the peak flux for each GRB template. The selected templates are 419, and their peak fluxes are within the $[2.6785e-10, \infty]$ range.}
 \label{f:exp-max-flux-distribution-E}
 \end{figure}
-The simulation time is limited to 500 seconds because we are interested in the first part of the GRB event, given the nature of the scientific use cases described in \autoref{s:contribution-2-use-cases}. The trigger time that defines the start of the GRB event is fixed and equal to 250 seconds. As described in \autoref{ss:integrator-module}, the photons lists must be integrated in space, time, and energy to generate the multi-variate time series of flux measurements. The integration time is set to 5 seconds to evaluate the performances of the techniques in the short-term scenario and 1 second for the very short-term scenario. The integration process generates time series of 100 (short-term scenario) and 500 (very short-term scenario) flux measurements. Finally, as described in \autoref{ss:extractor}, the time series extractor module extracts sub-sequences from the generated time series. The length of the sub-sequences is fixed and set to 5 points, the same setting used to generate the 
-data to train the auto-encoder. The stride parameter is set to 1 because the A.D. technique can use overlapping temporal bins, drastically reducing the time the model waits for data during the online inference. In contrast, the Li\&Ma technique must use temporal bins that are statistically independent. Finally, since the test set must be supervised, each sub-sequence is associated with a label. A sub-sequence is labeled as anomalous if at least one of its points exceeds the trigger time threshold that defines the start of the GRB event. At the end of the data pipeline for the test set generation, in the short-term scenario (integration time equal to 5 seconds), the number of test samples is 40224, of which 20531 are labeled anomalous. In the very short-term scenario (integration time = 1 second), the number of test samples is 207824, of which 104331 are labeled anomalous.
+The simulation time is limited to 500 seconds because we are interested in detecting the event as soon as possible. The trigger time that defines the start of the GRB event is fixed and equal to 250 seconds. The instrument response function (IRF) is the same used for generating the training set, which models the response of an LST-1 telescope located in the northern hemisphere site, observing for 5 hours at $40^{\circ}$ zenith angle.
+As described in \autoref{ss:integrator-module}, the photons lists must be integrated in space, time, and energy to generate the multi-variate time series of flux measurements. The integration time is set to 5 seconds to evaluate the performances of the techniques in the short-term scenario and 1 second for the very short-term scenario. The integration process generates time series of 100 (short-term scenario) and 500 (very short-term scenario) flux measurements. Finally, as described in \autoref{ss:extractor}, the time series extractor module extracts sub-sequences from the generated time series. The length of the sub-sequences is fixed and set to 5 points, the same setting used to generate the data to train the auto-encoder. The stride parameter is set to 1 because the anomaly detection technique can use overlapping temporal bins, drastically reducing the time the model waits for data during the online inference. In contrast, the Li\&Ma technique must use temporal bins that are statistically independent. Finally, each sub-sequence is associated with a label. A sub-sequence is labeled as anomalous if at least one of its points exceeds the trigger time threshold that defines the start of the GRB event. For the short-term scenario (integration time = 5 seconds), the number of generated test samples is 40224, of which 20531 are labeled anomalous. For the very short-term scenario (integration time = 1 second), the number of test samples is 207824, of which 104331 are labeled anomalous.
 
 
-\subsection{P-value thresholds}
+\FloatBarrier
+\section{P-value analysis results}
 \label{s:p-values-results}
-The p-value analysis has been performed to compute the thresholds the models can use to issue detections (i.e., positive classification with a $5\sigma$ significance). The distributions of the reconstruction errors and the corresponding p-values for the A.D. technique with CNN and RNN implementations and for integration times equal to 5 and 1 seconds are shown in \autoref{s:appendix-pvalue}. \autoref{tab:p-val-thresholds-it-5} and \autoref{tab:p-val-thresholds-it-1} show the value of the thresholds that correspond to $5\sigma$ significance, for both RNN and CNN implementation and different integration times:
-\begin{table}[ht]
+As outlined in \autoref{ss:p-values}, the p-value analysis is used to obtain the threshold $\tau$ to classify the samples as anomalies with a certain $\sigma$ level or, on the contrary, to associate with each anomaly score a statistical confidence level (of a positive classification). Four p-value analyses have been performed, one for each autoencoder model (convolutional and recurrent) in the short-term and very short-term settings. The models performed inferences on $1e^8$ background-only samples, and the distributions of the anomaly score (weighted mean squared error) have been computed. Then, the inverse cumulative of the distribution function was evaluated, and the mapping between the y-axis (p-values) and the x-axis (anomaly scores) was written on disk. 
+\begin{figure}[!htb]
+    \centering
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includesvg[width=\linewidth]{figures/experiments/p_val/model_1_ts.svg}
+    \end{minipage}%
+    \begin{minipage}{0.5\textwidth}
+       \centering
+       \includesvg[width=\linewidth]{figures/experiments/p_val/model_1_pvalues.svg}
+    \end{minipage}
+    \captionsetup{width=0.9\linewidth}
+    \caption{TS distribution and p-values for the autoencoder with recurrent layers in the short-term scenario (integration time = 5 seconds).}
+    \label{fig:ts-distribution-and-p-values-rnn-it-5}
+\end{figure}
+
+\begin{table}[!htb]
 \centering
-\begin{tabular}{|c|c|c|}
-    \hline
-    Model & Threshold & Sigma \\ 
-    \hline
-    RNN & $0.0020$ & $5.048$ \\
-    CNN & $0.0139$ & $5.046$ \\
-    \hline
-    \end{tabular}
-\caption{The thresholds corresponding to $5\sigma$ classification in the short term scenario (integration time equals 5 seconds).}
-\label{tab:p-val-thresholds-it-5}
-\vspace{1cm}
-\centering
-\begin{tabular}{|c|c|c|}
-    \hline
-    Model & Threshold & Sigma \\ 
-    \hline
-    RNN & $0.0026$ & $5.041$ \\
-    CNN & $0.0316$ & $5.048$ \\
-    \hline
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\multicolumn{4}{|c|}{p-values} \\
+\hline
+Threshold & p-value & $\pm$ error &  Sigma \\
+\hline
+0.003171 &  1.283972e-01 &  1.201785e-04 &  1.134 \\
+0.003751 &  6.115264e-02 &  8.293861e-05 &  1.545 \\
+0.004476 &  2.277199e-02 &  5.061155e-05 &  2.000 \\
+0.005492 &  5.323285e-03 &  2.447028e-05 &  2.554 \\
+0.006507 &  1.228234e-03 &  1.175411e-05 &  3.029 \\
+0.007667 &  2.312711e-04 &  5.100465e-06 &  3.502 \\
+0.009118 &  3.149606e-05 &  1.882250e-06 &  4.001 \\
+0.010859 &  3.262092e-06 &  6.057553e-07 &  4.509 \\
+0.013760 &  4.499438e-07 &  2.249719e-07 &  4.912 \\
+0.013905 &  2.249719e-07 &  1.590791e-07 &  5.047 \\
+\hline
 \end{tabular}
-\caption{The thresholds corresponding to $5\sigma$ classification in the very short term scenario (integration time equals 1 second).}
-\label{tab:p-val-thresholds-it-1}
+\caption{An example of p-value analysis for the autoencoder with recurrent layers in the short-term scenario (integration time = 5 seconds). The table shows a subset of all the rows. Only the threshold values corresponding to predefined sigma levels are shown.}
+\label{tab:p-value-table-rnn-itime-5}
 \end{table}
-
-
+The visualization tool of \cite{dipiano2022ctasagsci} has been used to compute the plots shown in \autoref{fig:ts-distribution-and-p-values-rnn-it-5}. The figure shows the p-value analysis results for the autoencoder with recurrent layers in the short-term scenario. The left panel  shows the test statistic distribution, and the right panel shows the corresponding p-values. \autoref{tab:p-value-table-rnn-itime-5} shows the actual values of the anomaly score - sigma level mapping. The number of rows of the table was limited to only certain levels of sigma. \autoref{s:appendix-a} lists the p-value analysis results for each model and analysis setting. 
 
  
-\section{Results}
-\label{s:Experiment-Results}
 
-\subsection{Accuracy, precision, recall, and false positive rate}
+
+\section{Comparison of the autoencoder architecures}
 \label{s:Acc-Fpr}
-The accuracy, precision, recall, and false positive rate metrics tell us the percentage of the time series correctly classified, what proportion of positive identifications was actually correct, what proportion of actual positives was identified correctly, and what proportion of the actual negative events were wrongly categorized as positive. While precision measures the probability of a sample classified as positive to be an actual positive sample, the false positive rate measures the ratio of false positives within the negative samples. The accuracy, precision, and recall values for different thresholds can help understand the trade-off between the number of false positive and false negative classifications and also to compare the CNN and RNN implementations. The thresholds corresponding to $5\sigma$ significance have been used to evaluate these metrics. \autoref{s:appendix-metrics} shows the accuracy, precision, and recall curves for the A.D. technique with CNN and RNN implementation and for different integration times equal to 1 and 5 seconds. As we can see from \autoref{tab:standard-metrics}, the RNN performs better in terms of accuracy and recall in both scenarios. At the same time, CNN can optimize the number of false positive classifications. 
-
-\begin{table}[ht]
+As described in Section \autoref{s:contribution}, the proposed anomaly detection technique utilizes an autoencoder model. Both convolutional and recurrent layer-based architectures for autoencoders have been examined. The chapter will compare their performances using standard machine learning metrics. The accuracy, precision, recall, and false positive rate metrics express the percentage of the time series correctly classified, what proportion of positive identifications was actually correct, what proportion of actual positives was identified correctly, and what proportion of the actual negative events were wrongly categorized as positive. While precision measures the probability of a sample classified as positive to be an actual positive sample, the false positive rate measures the ratio of false positives within the negative samples. The accuracy, precision, and recall values computed with different thresholds can help understand the evolution of trade-offs between the number of false positive and false negative classifications. \autoref{fig:rnn-metrics-itime-5} shows the accuracy, precision, and recall curves for the autoencoder model with recurrent layers in the short-term settings (integration time = 5). 
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\linewidth]{figures/experiments/metrics/rnn_metrics_test_set_all_itime_5.png}
+    \captionsetup{width=0.9\linewidth}
+    \caption{Accuracy, precision, and recall curves for the autoencoder model with recurrent layers in the short-term settings (integration time = 5).}
+    \label{fig:rnn-metrics-itime-5}
+\end{figure}
+\autoref{tab:standard-metrics-itime-5} and \autoref{tab:standard-metrics-itime-1} show the actual values of accuracy, precision, recall, and false positive rate computed using the $5\sigma$ threshold, for both architectures and short-term settings. The autoencoder with recurrent layers obtained better accuracy and recall in both scenarios. At the same time, autoencoder with convolutional layers is less precise but has a better false positive rate. 
+\begin{table}[!htb]
 \centering
 \begin{tabular}{|c|c|c|c|c|}
     \hline
@@ -76,7 +104,8 @@ The accuracy, precision, recall, and false positive rate metrics tell us the per
     CNN & $59.96\%$ & $99.86\%$ & $21.58\%$ & $0.13\%$ \\
     \hline
     \end{tabular}
-\caption{Standard metrics in the short-term settings (integration time=5), using the $5\sigma$ threshold. The number of test samples is 40224, of which 20531 are anomalous.}
+\caption{Standard metrics in the short-term settings (integration time = 5), using the $5\sigma$ threshold. The number of test samples is 40224, of which 20531 are anomalous.}
+\label{tab:standard-metrics-itime-5}
 \vspace{1cm}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -87,269 +116,184 @@ The accuracy, precision, recall, and false positive rate metrics tell us the per
     CNN & $55.58\%$ & $99.98\%$ & $11.52\%$ & $0.016\%$ \\
     \hline
 \end{tabular}
-\caption{Standard metrics in the very short-term settings (integration time=1), using the $5\sigma$ threshold. The number of test samples is 207824, of which 104331 are anomalous.}
-\label{tab:standard-metrics}
+\caption{Standard metrics in the very short-term settings (integration time = 1), using the $5\sigma$ threshold. The number of test samples is 207824, of which 104331 are anomalous.}
+\label{tab:standard-metrics-itime-1}
 \end{table}
+\autoref{s:appendix-b} presents the same metrics for each model and analysis setting. 
 
-\subsection{Serendipitous discoveries use case}
+
+\FloatBarrier
+\section{Evaluation of the proposed technique against Li\&Ma}
+
+\FloatBarrier
+\subsection{Key performance indicators}
+The first key performance indicator is the cumulative number of $5\sigma$ detections. This metric evaluates the robustness of the techniques. As outlined in \autoref{s:Experiment-Data}, the data set for testing is composed of 419 simulated GRB events. The number of $5\sigma$ detections is evaluated for each time bin whose time span depends on the integration time and the length of the sub-sequences. This number is cumulated for the following time bins. 
+
+For the reasons stated in the previous section, evaluating how fast the technique is to issue $5\sigma$ detections is crucial. Hence the second key performance indicator represents the average time to perform detections. This metric is called \textit{Detection Delay} (DD) and is evaluated as follows. For each time bin, the number of seconds between the start of the GRB event ($t_{grb}=250s$) and the detection time, is computed. This delay ($d_{tb}$) is the same for each detection performed in a time bin. For example, if the autoencoder model performs a detection in time bin $[230-255]$, the delay ($d_{[230-255]}$) is equal to 5 seconds ($255-250$). The delay is computed for each time bin. Then, a weighted average is evaluated, considering the number of the detections in common to the two techniques within the time bins, from $[245-250]$ to $tb_{max}$. Considering the short-term scenario, the detection delay (DD) is defined as:
+\begin{equation}
+    DD = \frac{1}{tcd} \sum_{tb=[245-250]}^{tb_{max}} w_{tb}*d_{tb}
+\end{equation}
+Where $tcd$ is the total number of detections in common to the two methods, $w_{tb}$ represents the number of detections made in a particular time bin, and $d_i$ is the delay expressed as the difference between $tb$ and the time bin of the start of the GRB event ($t_{grb}=250s$). 
+
+\FloatBarrier
+\subsection{Serendipitous discovery results}
 \label{s:Serendipitous-Discoveries-Results}
-In the serendipitous discoveries scenario, a GRB event serendipitously appears in the telescopes' field of view. The goal is to detect the event to broadcast a science alert. The detection must be performed as soon as possible for two main reasons: the GRB events are transient, and the first seconds of data provide crucial information about the initial conditions of the GRB, such as the properties of the central engine and the nature of the emitting material \cite{kumar2000energetics}.
+In the serendipitous discovery scenario, the telescopes observe a certain sky region, and an unexpected event is detected in the field of view. The telescope's field of view (FOV) is larger than the region of interest (ROI). This study assumes a blind-search analysis applied to the whole field of view to select the ROI. In particular, it is assumed that the blind-search analysis will always find the ROI that contains the GRB event in its center and will take a fixed time of 10 seconds to complete.
 
-\subsubsection{Short-term scenario (integration time equals to 5 seconds)}
+\FloatBarrier
+\subsubsection{Short-term scenario}
 \label{s:Serendipitous-Discoveries-Results-Short-Term}
-\autoref{f:cumulative-detections-itime-5} shows the cumulative number of detections done by the A.D. and Li\&Ma techniques for each temporal bin in the short-term scenario. The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the simulated trials.
-\begin{figure}[ht]
+\autoref{f:serendipitous-discoveries-itime-5} shows the cumulative number of detections performed by the anomaly detection and Li\&Ma techniques for each temporal bin in the short-term scenario (integration time = 5 seconds). The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the GRB events.  The vertical dashed line corresponds to the start of the GRB event. The grey area represents the application of the blind-search algorithm, so even if the series start at bin $[225-250]$, only the points outside the grey area must be considered.
+\begin{figure}[!ht]
 \centering
-\includesvg[width=1\textwidth]{figures/experiments/results/ad_vs_li_cumulative_test_set_all_itime_5.svg}
-\caption{The cumulative number of detections among all simulated trials for each time bin in the short-term scenario (integration time equal to 5 seconds) for the A.D. (CNN and RNN implementations) and Li\&Ma techniques. The vertical dashed line corresponds to the start of the GRB event.}
-\label{f:cumulative-detections-itime-5}
+\includesvg[width=1\textwidth]{figures/experiments/results/serendipitous_discoveries_time_5.svg}
+\captionsetup{width=0.9\linewidth}
+\caption{The cumulative number of detections of anomaly detection and Li\&Ma techniques for each temporal bin in the short-term scenario (integration time = 5 seconds). The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the GRB events. The vertical dashed line corresponds to the start of the GRB event. The grey area represents the application of the blind-search algorithm.}
+\label{f:serendipitous-discoveries-itime-5}
 \end{figure}
-The plot shows the robustness of the Li\&Ma technique, detecting more GRBs than the A.D. technique. It also shows that the Li\&Ma technique can be applied only for temporal bins that do not overlap, i.e., statistically independent. In contrast, the A.D. technique can be applied to each $T=5$ seconds of new data, leading to faster detections. This feature is essential since the detections must be performed as soon as possible. To give a quantitative measure of the quickness to perform detections, a metric called \textit{detection delay} has been defined as the average time of the first detection for each GRB event.
-\begin{table}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% detections it=5
-\centering
-\begin{tabular}{|c|cccc|} 
-\hline
-\multicolumn{1}{|c|}{A.D. vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-    & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$  \\
-\hline
-Number of detections (RNN) & 45 & 90 & 116  & 132 \\
-\hline
-Number of detections (CNN) & 40 & 65 & 99 & 118 \\
-\hline
-Number of detections (Li\&Ma) & 0 & 82 & 137 & 167 \\
-\hline
-Detection delay (s) (RNN) & $11.11 \pm 3.78$ & $18.17 \pm 8.08$  & $24.74 \pm 14.71$   & $32.01 \pm 24.41$ \\
-\hline
-Detection delay (s) (CNN)& $11.62 \pm 3.6$ & $16.69 \pm 7.35$ & $26.41 \pm 15.46$  & $36.02 \pm 26.91$ \\
-\hline
-Detection delay (s) (Li\&Ma)& - & $25 \pm 0$ & $35.04 \pm 12.25$  & $43.86 \pm 22.47$ \\
-\hline
-\end{tabular}
-\caption{The table reports the number of serendipitous detections in the short-term scenario (integration time equal to 5 seconds) starting from the beginning of the GRB event ($TT=250s$) within a $T_{max}$ time and the corresponding detection delay. The detection delay is the average time the techniques take to detect the GRB events for the first time.}
-\label{tab:serendipitous-detections-itime-5}
-\end{table}
-\begin{table}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% detections it=1
-\centering
-\begin{tabular}{|c|cccc|} 
-\hline
-\multicolumn{1}{|c|}{A.D. vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-    & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$  \\
-\hline
-Number of detections (RNN) & 42 & 70 & 92  & 110 \\
-\hline
-Number of detections (CNN) & 38 & 59 & 74 & 79 \\
-\hline
-Number of detections (Li\&Ma) & 24 & 50 & 84 & 97 \\
-\hline
-Detection delay (s) (RNN) & $8.12 \pm 4.18$ & $13.6 \pm 7.91$  & $20.54 \pm 14.7$   & $31.65 \pm 29.36$ \\
-\hline
-Detection delay (s) (CNN)& $8.66 \pm 4.07$ & $14.25 \pm 8.62$ & $19.24 \pm 12.82$  & $22.42 \pm 17.56$ \\
-\hline
-Detection delay (s) (Li\&Ma)& $11.46 \pm 3.67$ & $18.1 \pm 7.54$ & $29.46 \pm 16.04$  & $36.91 \pm 24.71$ \\
-\hline
-\end{tabular}
-\caption{The table reports the number of serendipitous detections in the very short-term scenario (integration time equal to 1 second) starting from the beginning of the GRB event ($TT=250s$) within a $T_{max}$ time and the corresponding detection delay. The detection delay is the average time the techniques take to detect the GRB events for the first time.}
-\label{tab:serendipitous-detections-itime-1}
-\end{table}
-\begin{table}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% common detections it=5
-\begin{tabular}{|c|cccc|}  
-\hline
-\multicolumn{1}{|c|}{A.D. (RNN) vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-(common detections) & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$        \\
-\hline
-Number of detections & 0 & 69 & 109 & 129           \\
-\hline
-Detection delay (s) (RNN)& - & $15.87 \pm 6.7$ & $24.08 \pm 13.72 $ & $32.56 \pm 24.42.2$        \\
-\hline
-Detection delay (s) (Li\&Ma)& - & $25 \pm 0$ & $34.17 \pm 12.05$  & $39.53 \pm 17.8$   \\
-\hline
-\end{tabular}
-\vspace{1em}
-\begin{tabular}{|c|cccc|}
-\hline
-\multicolumn{1}{|c|}{A.D. (CNN) vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-(common detections) & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$        \\
-\hline
-Number of detections & 0 & 61 & 96 & 116           \\
-\hline
-Detection delay (s) (CNN)& - & $16.15 \pm 7.09$ & $26.2 \pm 15.27$  & $36.29 \pm 27.05$         \\
-\hline
-Detection delay (s) (Li\&Ma)& - & $25 \pm 0$ & $34.17 \pm 12.05$  & $39.53 \pm 17.8$   \\
-\hline
-\end{tabular}
-\caption{The tables report the number of serendipitous common detections in the short-term scenario (integration time equal to 5 seconds) starting from the beginning of the GRB event ($TT=250s$) within a $T_{max}$ time and the corresponding detection delay. The detection delay is the average time the techniques take to detect the GRB events for the first time.}
-\label{tab:serendipitous-detections-common-itime-5}
-\end{table}
-\begin{table} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  common detections it=1
-\begin{tabular}{|c|cccc|}  
-\hline
-\multicolumn{1}{|c|}{A.D. (RNN) vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-(common detections) & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$        \\
-\hline
-Number of detections & 23 & 45 & 80 & 94 \\
-\hline
-Detection delay (s) (RNN)& $8.22 \pm 4.02$ & $14.44 \pm 8.08 $ & $21.24 \pm 14.29$ & $ 27.1 \pm 22.92$ \\
-\hline
-Detection delay (s) (Li\&Ma)& $11.74 \pm 3.49$ & $17.33 \pm 6.8$ & $29.12 \pm 15.83$  & $36.38 \pm 23.83$   \\
-\hline
-\end{tabular}
-\vspace{1em}
-\begin{tabular}{|c|cccc|}
-\hline
-\multicolumn{1}{|c|}{A.D. (CNN) vs Li\&Ma} & \multicolumn{4}{c|}{$T_{max}$}  \\
-(common detections) & $TT+15s$ & $TT+30s$ &  $TT+60s$ & $TT+120s$        \\
-\hline
-Number of detections & 21 & 38 & 64 & 74           \\
-\hline
-Detection delay (s) (CNN) & $7.81 \pm 4.03$ & $14.18 \pm 8.83$  & $19.58 \pm 12.62$  & $23.51 \pm 17.58$  \\
-\hline
-Detection delay (s) (Li\&Ma)& $11.43 \pm 3.5$ & $16.45 \pm 6.78$ & $25.7 \pm 14.47$  & $30.27 \pm 19.61$   \\
-\hline
-\end{tabular}
-\caption{The tables report the number of serendipitous common detections in the very short-term scenario (integration time equal to 1 second) starting from the beginning of the GRB event ($TT=250s$) within a $T_{max}$ time and the corresponding detection delay. The detection delay is the average time the techniques take to detect the GRB events for the first time.}
-\label{tab:serendipitous-detections-common-itime-1}
-\end{table}
-\autoref{tab:serendipitous-detections-itime-5} shows the performances of the A.D. (RNN and CNN implementations) and Li\&Ma techniques in terms of the number of detections starting from the beginning of the GRB event ($TT = 250s$)  within a $T_{max}$ time. $T_{max}$ represents the delay before the start of the observation when the observatory reacts to an external science alert, assuming the following values: 15, 30, 60, and 120 seconds. The tables also report the detection delays. In \autoref{tab:serendipitous-detections-common-itime-5}, only the common GRB detections between A.D. and Li\&Ma have been considered to give a more accurate comparison of the detection delay. Both tables show lower detection delays for the A.D. technique, regardless of the layer's implementations. This result demonstrates that the anomaly detection technique is more suitable in situations where the detection time needs to be optimized.
-% seen / not seen
-\begin{table}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% seen-not-seen it=5
-\centering
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 1          & 3     \\
-\hline
-A.D. (CNN) & 0          & -          & 1 \\
-\hline
-Li\&Ma     & 0         & 0         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 2          & 3     \\
-\hline
-A.D. (CNN) & 0          & -          & 2     \\
-\hline
-Li\&Ma & 11         & 13         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 3         & 3     \\
-\hline
-A.D. (CNN) & 0          & -          & 2     \\
-\hline
-Li\&Ma & 18         & 25         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 5          & 3     \\
-\hline
-A.D. (CNN) & 0          & -          & 2     \\
-\hline
-Li\&Ma & 28         & 39         & -    \\
-\hline
-\end{tabular}
-\caption{The number of GRB events serendipitous detected in the short-term scenario (integration time equal to 5 seconds) by a technique but not detected by the others, within $T_{max}=TT+15$, $T_{max}=TT+30$, $T_{max}=TT+60$, and $T_{max}=TT+120$ seconds.}
-\label{tab:seen-unseen-serendipitous-itime-5}
-\end{table}
-In the same settings, we are also interested in the number of GRB events detected by the A.D. technique but not detected by the Li\&Ma technique: \autoref{tab:seen-unseen-serendipitous-itime-5} is a confusion matrix showing that the A.D. technique with RNN layers found 3 GRB events and the A.D. with CNN layers found 2. 
-
-\subsection{Serendipitous discoveries use case in the very short-term scenario}
-\label{s:Serendipitous-Discoveries-Results-very-short-term}
-The evaluations of the previous section will be performed again in the very short-term scenario, where the integration time equals 1 second. In this scenario, the photons counts are further reduced, often exceeding the lower bounds of the Li\&Ma technique (equal to 10). Hence, this technique is not always applicable. The reduced number of photon counts also negatively affects the performance of the A.D. technique. In contrast, it further reduces the time the A.D. technique needs to wait for new data: from 5 seconds to 1 second. Each second, a new flux data measurement is available, and a new sub-sequence is ready for analysis. This potentially decreases the detection time, leading to better performance. \autoref{f:cumulative-detections-itime-1} shows the cumulative number of detections done by the A.D. and Li\&Ma techniques for each temporal bin in the very short-term scenario. The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the simulated trials. The number of detections performed by the A.D. technique with RNN implementation is always greater than the number of detections performed by the Li\&Ma technique, proving greater robustness in this extreme scenario. The Li\&Ma technique suffers from its limitation of having at least 10 photon counts of applying the analysis. In contrast, the A.D. method overcomes this limitation and still performs detections. Also, in the very short-term scenario, \autoref{tab:serendipitous-detections-itime-1} and \autoref{tab:serendipitous-detections-common-itime-5} show that the A.D. technique performs faster detections, obtaining a detection delay always lower than the Li\&Ma technique. \autoref{tab:seen-unseen-serendipitous-itime-1} shows that the A.D. technique detects from 5 to 11 GRB events not seen by the Li\&Ma technique, but in this case, this is not very interesting since the A.D technique sees the majority of the GRB events. These results also confirm that the RNN implementation performs better than the CNN implementation. 
-\begin{figure}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\centering
-\includesvg[width=1\textwidth]{figures/experiments/results/ad_vs_li_cumulative_test_set_all_itime_1.svg}
-\caption{The cumulative number of detections among all simulated trials for each time bin in the very short-term scenario (integration time equal to 1 second) for the A.D. (CNN and RNN implementations) and Li\&Ma techniques. The vertical dashed line corresponds to the start of the GRB event.}
-\label{f:cumulative-detections-itime-1}
-\end{figure}
-\begin{table} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% seen not seen it=1
-\centering
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 1          & 6     \\
-\hline
-A.D. (CNN) & 0          & -          & 5 \\
-\hline
-Li\&Ma     & 1         & 1         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 4          & 6     \\
-\hline
-A.D. (CNN) & 0          & -          & 5     \\
-\hline
-Li\&Ma & 1         & 3         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|} 
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 9         & 6     \\
-\hline
-A.D. (CNN) & 0          & -          & 5     \\
-\hline
-Li\&Ma & 1         & 10         & -    \\
-\hline
-\end{tabular}
-\begin{tabular}{|r|c|c|c|}
-\hline
-\multicolumn{1}{|c|}{\diagbox{Detected by}{Not detected by}} & A.D. (RNN) & A.D. (CNN) & LiMa  \\
-\hline
-A.D. (RNN) & -          & 20          & 11    \\
-\hline
-A.D. (CNN) & 0          & -          & 5     \\
-\hline
-Li\&Ma & 2         & 14         & -    \\
-\hline
-\end{tabular}
-\caption{The number of GRB events serendipitous detected in the very short-term scenario (integration time equal to 1 second) by a technique but not detected by the others, within $T_{max}=TT+15$, $T_{max}=TT+30$, $T_{max}=TT+60$, and $T_{max}=TT+120$ seconds.}
-\label{tab:seen-unseen-serendipitous-itime-1}
-\end{table}
-
-\subsubsection{Short-term vs very short-term for serendipitous discoveries}
-\label{s:serendipitous-short-term-vs-very-short-term}
-The previous sections show the superiority of the A.D. technique concerning Li\&Ma. In this section, we want to understand the best scenario for applying the A.D. technique for serendipitous discoveries. Let's compare the results in \autoref{tab:serendipitous-detections-itime-5} and \autoref{tab:serendipitous-detections-itime-1}. If the goal is to maximize the number of detections, the short-term scenario with an integration time of 5 seconds is preferred. If the goal is to optimize the detection delay, the very short-term scenario with an integration time of 1 second is the way to go. In practice, the two scenarios are not exclusive, and both models can work together in parallel. 
+The figure shows the robustness of the Li\&Ma technique, detecting at the end of the observation more GRBs than the anomaly detection technique. However, we are interested in the first part of the observation since detections must be performed as soon as possible. The anomaly detection technique can be applied after each $T=5$ seconds of new data. In contrast, Li\&Ma is limited by statistical independence assumption and can be applied only for temporal bins that do not overlap. To quantify how faster the anomaly detection technique is concerning Li\&Ma, \autoref{tab:dd-itime-5} shows the DD metric. The first temporal bin considered in the table starts when the blind-search algorithm ends. The next temporal bins are the ones in which Li\&Ma has applied. To be fairer in the comparison against Li\&Ma, \autoref{tab:dd-itime-5-common} reports the same metrics but considers only the same detections performed by both anomaly detection and Li\&Ma techniques. The tables prove the ability of the anomaly detection technique to perform faster detections with respect to Li\&Ma.
 
 
-\subsection{Observation triggered by an external science alert use case}
-\label{s:Science-Alert-Results}
-
-When the observatory reacts to a science alert another facility broadcasts, the telescopes will change their pointing to observe a sky region where a GRB event is already started. The time taken to receive the science alert, change the pointing, and wait for enough data to perform the first analysis is variable: four values have been considered to model this delay: 15, 30, 60, and 120 seconds. The same evaluation done for the serendipitous discovery use case is performed in this section. The only difference is that the observation starts at time $TT+120$ until the end of the observation (500 seconds).
-
-\begin{figure}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% cumulative it=5
+ 
+\begin{table}[!ht]
 \centering
-\includesvg[width=1\textwidth]{figures/experiments/results/ad_vs_li_cumulative_test_set_all_itime_5_45_95.svg}
-\caption{The cumulative number of detections among all simulated trials for each time bin in the short-term scenario (integration time equal to 5 seconds) for the A.D. (CNN and RNN implementations) and Li\&Ma techniques. The vertical dashed line corresponds to the start of the GRB event.}
-\label{f:cumulative-detections-science-alert-itime-5}
+\begin{tabular}{|c|cc|cc|cc|} 
+\hline
+\multicolumn{7}{|c|}{\textbf{Detection delay} (common detections)} \\ 
+\hline
+\multicolumn{1}{|c|}{Temporal bins} & \multicolumn{2}{c|}{CNN} & \multicolumn{2}{c|}{RNN} & \multicolumn{2}{c|}{Li\&Ma} \\ 
+\hline
+250-275 &  6.86 &  $\pm$5.41 &  6.37 &  $\pm$5.57 & 15.00 &  $\pm$0 \\
+275-300 & 10.78 &  $\pm$9.25 & 12.04 & $\pm$11.56 & 21.28 & $\pm$10.87 \\
+300-325 & 14.28 & $\pm$13.69 & 15.98 & $\pm$15.58 & 24.87 & $\pm$14.6 \\
+325-350 & 17.02 & $\pm$17.31 & 18.87 & $\pm$18.75 & 27.64 & $\pm$17.9 \\
+350-375 & 18.98 & $\pm$19.88 & 21.31 & $\pm$21.79 & 29.59 & $\pm$20.25 \\
+\hline
+\end{tabular}
+\caption{Detection delay (in seconds) for serendipitous discoveries in the short-term scenario (integration time = 5 seconds) with common detections.}
+\label{tab:dd-itime-5-common}
+\end{table}
+
+
+
+
+
+
+\FloatBarrier
+\subsubsection{Very short-term scenario}
+\label{s:Serendipitous-Discoveries-Results-Very-Short-Term}
+The same metrics are evaluated again in the very short-term scenario, with an integration time equal to 1 second. In this scenario, the number of photon counts is further reduced, often exceeding the lower bounds of the Li\&Ma technique (equal to 10), limiting its applicability. In contrast, it reduces the time both techniques need to wait for new data: from 5 to 1 second. Each second, a new flux data measurement is available, and a new sub-sequence is ready for analysis. 
+\autoref{f:serendipitous-discoveries-itime-1} shows that the number of detections performed by the anomaly detection technique with recurrent layers is always greater than Li\&Ma's one, proving greater robustness in this extreme scenario. As said before, the Li\&Ma is not always applicable due to its limitation of requiring at least 10 photon counts. The reduced number of photon counts also negatively affects the performance of the anomaly detection technique. Concerning the detection delay, \autoref{tab:dd-itime-1} and \autoref{tab:dd-itime-1-common} show that, even in the very short-term scenario, the anomaly detection technique is faster with respect to Li\&Ma.
+
+\begin{figure}[!ht]
+\centering
+\includesvg[width=1\textwidth]{figures/experiments/results/serendipitous_discoveries_time_1.svg}
+\captionsetup{width=0.9\linewidth}
+\caption{The cumulative number of detections of anomaly detection and Li\&Ma techniques for each temporal bin in the very short-term scenario (integration time = 1 seconds). The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the GRB events. The vertical dashed line corresponds to the start of the GRB event. The grey area represents the application of the blind-search algorithm.}
+\label{f:serendipitous-discoveries-itime-1}
 \end{figure}
 
-\begin{figure}[ht] %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% cumulative it=1
+ 
+\begin{table}[!ht]
 \centering
-\includesvg[width=1\textwidth]{figures/experiments/results/ad_vs_li_cumulative_test_set_all_itime_1_240_500.svg}
-\caption{The cumulative number of detections among all simulated trials for each time bin in the very short-term scenario (integration time equal to 1 second) for the A.D. (CNN and RNN implementations) and Li\&Ma techniques. The vertical dashed line corresponds to the start of the GRB event.}
-\label{f:cumulative-detections-science-alert--itime-5}
+\begin{tabular}{|c|cc|cc|cc|} 
+\hline
+\multicolumn{7}{|c|}{\textbf{Detection delay} (common detections)} \\ 
+\hline
+\multicolumn{1}{|c|}{Temporal bins} & \multicolumn{2}{c|}{RNN} & \multicolumn{2}{c|}{CNN} & \multicolumn{2}{c|}{Li\&Ma} \\ 
+\hline
+280-285 & 10.11 &  $\pm$7.46 & 11.04 &  $\pm$7.54  & 11.57 &  $\pm$8.46\\
+305-310 & 13.77 & $\pm$11.69 & 13.86 &  $\pm$9.86 & 17.01 & $\pm$13.86\\
+330-335 & 15.39 & $\pm$13.56 & 15.93 & $\pm$12.46 & 19.8 & $\pm$16.39 \\
+355-360 & 17.24 & $\pm$16.41 & 17.14 & $\pm$13.95 & 22.31 & $\pm$19.48 \\
+380-385 & 18.95 & $\pm$19.27 & 18.65 & $\pm$17.28 & 24.35 &$\pm$22.23 \\
+\hline
+\end{tabular}
+\caption{Detection delay (in seconds) for serendipitous discoveries in the very short-term scenario (integration time = 1 seconds) with common detections.}
+\label{tab:dd-itime-1-common}
+\end{table}
+
+
+
+
+\FloatBarrier
+\subsection{Follow-up observation results}
+\label{s:Follow-Up-Observation-Results}
+In the follow-up observation scenario, the facility receives a scientific alert and adjusts the pointing of its telescope to a new sky region to detect the event. This study considers the variable delay between the event's start and the taking of the first photon counts, which depends on the time to receive the scientific alert and the time the telescopes take to change the pointing. Four delay values are considered (25, 50, 75, and 100 seconds). 
+The localization error of the source provided by the received scientific alert is addressed by assuming a blind-search algorithm that starts at soon as the telescopes stop slewing and start taking data. As in the serendipitous discovery scenario, the blind-search algorithm is always assumed to find the right ROI in a fixed time of 10 seconds.  
+
+\FloatBarrier
+\subsubsection{Short-term scenario}
+\label{s:Follow-Up-Observation-Results-Short-Term}
+
+
+
+\begin{figure}[!ht]
+\centering
+\includesvg[width=1.1\textwidth]{figures/experiments/results/follow_up_itime_5.svg}
+\captionsetup{width=1\linewidth}
+\caption{The cumulative number of detections of anomaly detection and Li\&Ma techniques for each temporal bin in the short-term scenario (integration time = 5 seconds). The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the GRB events. The vertical dashed line corresponds to the start of the GRB event.}
+\label{f:follow-up-itime-5}
 \end{figure}
 
 
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|c|cc|cc|cc|} 
+\hline
+\multicolumn{7}{|c|}{\textbf{Detection delay} (common detection)} \\ 
+\hline
+\multicolumn{1}{|c|}{Temporal bins} & \multicolumn{2}{c|}{RNN} & \multicolumn{2}{c|}{CNN} & \multicolumn{2}{c|}{Li\&Ma} \\ 
+\hline
+275-300 &  25    & $\pm$0 & 25 &  $\pm$0 & 25 &  $\pm$0  \\
+300-325 & 35.94 & $\pm$7.79 & 33.54 &  $\pm$9.26 & 28.68 &  $\pm$8.89 \\
+325-350 & 41.5  & $\pm$13.5 & 38.37 & $\pm$13.59 & 32.01 & $\pm$13.83 \\
+350-375 & 45    & $\pm$17.08 & 43.04 & $\pm$18.42 & 34.32 & $\pm$16.95  \\
+375-400 & 48.71 & $\pm$21.82 & 48.25 & $\pm$24.32 & 36.71 & $\pm$20.75  \\
+\hline
+\end{tabular}
+\caption{Detection delay (in seconds) for follow-up observations in the short-term scenario (integration time = 5 seconds) for common detection.}
+\label{tab:dd-follow-up-itime-5-common}
+\end{table}
+ 
+
+\FloatBarrier
+\subsubsection{Very short-term scenario}
+\label{s:Follow-Up-Observation-Results-Very-Short-Term}
+
+\begin{figure}[!ht]
+\centering
+\includesvg[width=1.1\textwidth]{figures/experiments/results/follow_up_itime_1.svg}
+\captionsetup{width=1\linewidth}
+\caption{The cumulative number of detections of anomaly detection and Li\&Ma techniques for each temporal bin in the very short-term scenario (integration time = 1 seconds). The x-axis holds each temporal bin. The y-axis holds the cumulative number of detections among all the GRB events. The vertical dashed line corresponds to the start of the GRB event.}
+\label{f:follow-up-itime-1}
+\end{figure}
+
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|c|cc|cc|cc|} 
+\hline
+\multicolumn{7}{|c|}{\textbf{Detection delay} (common detection)} \\ 
+\hline
+\multicolumn{1}{|c|}{Temporal bins} & \multicolumn{2}{c|}{RNN} & \multicolumn{2}{c|}{CNN} & \multicolumn{2}{c|}{Li\&Ma} \\ 
+\hline
+260-265 & 5 &  $\pm$0 & 5 &  $\pm$0 & 5 &  $\pm$0 \\
+290-295&15.78&$\pm$7.71&16.74&$\pm$6.82&14.65&$\pm$7.82\\
+315-320&18.74&$\pm$11.07&19.13&$\pm$11.26&19.62&$\pm$12.74\\
+340-345&20.46&$\pm$13.2&20.31&$\pm$13.14&22.49&$\pm$15.72\\
+365-370&22.86&$\pm$16.96&20.82&$\pm$13.83&24.78&$\pm$18.48\\
+\hline
+\end{tabular}
+\caption{Detection delay (in seconds) for follow-up observations in very the short-term scenario (integration time = 1 second) for common detections.}
+\label{tab:dd-follow-up-itime-1-common}
+\end{table}
 
 
 
-
-
-\section{Summary}
-\label{s:Experiments-Summary}
+% THIS GO TO CONLUSIONS
+\FloatBarrier
+\subsection{Short-term vs very short-term}
+\label{s:Short-term-vs-very-short-term}
+In this section, we want to understand the best scenario for applying the proposed anomaly detection technique for serendipitous discoveries and follow-up observations. 
+If the goal is to maximize the number of detections, the short-term scenario is preferred. If the goal is to optimize the detection delay, the very short-term scenario is the way to go. In practice, the two scenarios are not exclusive, and both models can work together in parallel. 

@@ -19,25 +19,17 @@ Our key contributions include:
 \section{Thesis Outline}
 \label{s:Outline}
 
-The remainder of this thesis is organized as follows. \hinttext{Note: Depending on your research, you will have to change the structure of the thesis. For example, if you have many contribution chapters that are only loosely related, it might be useful to have a separate related works and/or experiments section per chapter.}
+The remainder of this thesis is organized as follows. 
 
 \begin{description}
 
-  \item[Chapter \ref{c:Background}] provides background information relevant to the field of research. \hinttext{Provide details regarding topics and concepts that you will refer to throughout the thesis and that cannot be assumed to be already known by typical readers. A background chapter is not mandatory, but chances are that you need one. See \texttt{text/ch2.tex} for details.}
+  \item[Chapter \ref{s:Gamma-Ray-Astronomy}] gives the reader the required background to understand the context of this work. \autoref{s:Gamma-Ray-Astronomy} discusses $\gamma$-ray astronomy and ground-based $\gamma$-ray imaging with Cherenkov telescopes. \autoref{s:CTA} introduces the Cherenkov Telescope Array Observatory (CTAO), the science goals, an overview of the telescope array, and its associated computing and software systems, including the Science Alert Generation System. Finally, it explores the scientific use cases of serendipitous discoveries and follow-up observations linked to the real-time detection of transient events. \autoref{s:gamma-ray-data-analysis} covers gamma-ray data analysis techniques, including the full field of view maximum likelihood and the aperture photometry. It also describes the Li\&Ma significance estimation method in the context of a reflected regions background estimation algorithm. Finally, \autoref{s:Gamma-Ray-Bursts} covers the study of $\gamma$-ray bursts, the transient phenomena this work is focused on.
   
-  \item[Chapter \ref{c:Related-Works}] provides a detailed discussion of the major existing contributions to the field and how they relate to each other and our proposed algorithm ... \hinttext{This must be adapted depending on your research. See \texttt{text/ch3.tex} for details.}
-  
-  \item[Chapter \ref{c:Contribution-1}] details the properties and development of ... \hinttext{Write at least 1-2 sentences more to give the reader an idea what your first major contribution chapter is about. See \texttt{text/ch4.tex} for details.}
-  
-  \item[Chapter \ref{c:Contribution-2}] details the properties and development of the ... algorithm. \hinttext{Write at least 1-2 sentences more to give readers an idea what your second major contribution chapter is about. See \texttt{text/ch5.tex} for details.}
-  
-  \hinttext{Expand this list if you have further contribution chapters.}
-  
-  \item[Chapter \ref{c:Experiments}] details testing of our proposed ... algorithm in an experimental setting. \hinttext{Write at least 1-2 sentences more to give an idea what the chapter is about. See \texttt{text/ch6.tex} for details.}
-  
-  \item[Chapter \ref{c:Conclusions}] concludes this thesis. First, we summarize our work. Then, we high-
-  light interesting aspects that we did not fully cover and provide a thorough discussion of potential topics and areas, with respect to ..., that may be interesting for future research activities. \hinttext{A conclusion chapter is mandatory. Please do not copy. Rewrite this! See \texttt{text/ch7.tex} for details.}
-  
+  \item[Chapter \ref{s:anomaly-detection}] introduces the concept of anomaly detection for time series analysis, discussing the major existing contributions to the field. \autoref{s:anomaly-detection} introduces the definition and properties of time series data and the concept of anomaly. It discusses the several types of techniques existing in the scientific literature, classifying them using a taxonomy. \autoref{s:ad-with-dl} focuses on anomaly detection techniques based on deep learning. The method developed in this work belongs to this category. \autoref{ss:ad-astrophysics} lists several contributions made in the astrophysics field, proving that these techniques are becoming increasingly popular for analyzing astrophysical data.
+
+
+  \item[Chapter \ref{s:contribution}] presents the proposed method to address the real-time source detection problem introduced in \autoref{s:sag}. This chapter is organized as follows. \autoref{s:contribution} will describe the proposed anomaly detection technique. It presents the data pipeline that has been developed to generate input data, the deep learning architectures that have been investigated, and the training process. The evaluation of the models will be addressed in \autoref{s:Experiment-Setup}. \autoref{ss:p-values} will describe the p-value analysis to associate each positive classification with a gaussian statistical significance. \autoref{s:non-stationary-settings} will investigate several problems that can arise during the telescope observations and how those problems can affect the proposed system.
+
 \end{description}
 
 

@@ -114,7 +114,7 @@
 \newcommand{\myfloatalign}{\centering} % to be used with each float for alignment
 \usepackage{makecell}
 \usepackage{multirow}
-\usepackage[width=.75\textwidth]{caption}
+\usepackage[width=0.9\textwidth]{caption}
 % Thanks to cgnieder and Claus Lahiri
 % http://tex.stackexchange.com/questions/69349/spacedlowsmallcaps-in-caption-label
 % [REMOVED DUE TO OTHER PROBLEMS, SEE ISSUE #82]    
@@ -170,12 +170,13 @@
 % ********************************************************************
 \hypersetup{breaklinks=true}
 \hypersetup{linktocpage=true}
-\hypersetup{colorlinks=true}
+\hypersetup{colorlinks=false}
 \hypersetup{urlcolor=webbrown}
 \hypersetup{linkcolor=RoyalBlue}
 \hypersetup{citecolor=webgreen}
 \hypersetup{pageanchor=true}
 \hypersetup{plainpages=false}
+\hypersetup{hidelinks=true}
 %\hypersetup{bookmarksnumbered=true}
 %\hypersetup{bookmarksopen=true}
 %\hypersetup{bookmarksopenlevel=true}
@@ -327,12 +328,15 @@
 
 
 \usepackage{diagbox}
-\usepackage{svg}
-\usepackage{bm}
-\usepackage{amsthm}
-\theoremstyle{definition}
+\usepackage{svg} 
+\usepackage{bm} % bold-mode
+\usepackage{amsthm} 
+\theoremstyle{definition} % custom definition block
 \newtheorem{definition}{Definition}[section]
-\usepackage{gensymb}
+\usepackage{gensymb} % degree symbol
+\usepackage[section]{placeins} % This prevents placing floats before a section.
+%\usepackage[subsection]{placeins} % This prevents placing floats before a section.
+
 
 % ---------------- chapter abstracts
 \newenvironment{chapabstract}
@@ -347,3 +351,5 @@
 {\par}
 \makeatother
 
+
+ 

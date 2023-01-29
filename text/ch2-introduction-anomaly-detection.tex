@@ -1,12 +1,15 @@
 \begin{chapabstract}
 \small{
-This chapter will introduce the anomaly detection field, focusing on time series analysis.
+This chapter introduces the concept of anomaly detection for time series analysis, discussing the major existing contributions to the field. This chapter is organized as follows. \autoref{s:anomaly-detection} introduces the definition and properties of time series data and the concept of anomaly. It discusses the several types of techniques existing in the scientific literature, classifying them using a taxonomy. 
+\autoref{s:ad-with-dl} focuses on anomaly detection techniques based on deep learning. The method developed in this work belongs to this category.
+\autoref{ss:ad-astrophysics} lists several contributions made in the astrophysics field, proving that these techniques are becoming increasingly popular for analyzing astrophysical data.
 }\\
 \begin{center}
 \noindent\makebox[0.8\linewidth]{\rule{0.66\paperwidth}{0.4pt}}
 \end{center}
 \vspace{1cm}
 \end{chapabstract}
+
 \section{Anomaly Detection for time series analysis}
 \label{s:anomaly-detection}
 Anomaly detection involves the identification of patterns or events in data that are unusual or unexpected compared to a baseline or normal behavior \cite{chandola_2019}. Various factors, such as errors in data collection, rare events, or the influence of external factors, can cause these anomalies. This chapter will discuss anomaly detection in the context of time series data. A time series is generally considered a collection of observations indexed in time order, defined by the following properties:
