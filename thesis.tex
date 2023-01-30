@@ -21,7 +21,7 @@
 %   CONFIGURATION
 % -----------------------------------------------------------------------------
 % Thesis and submission:
-\newcommand{\myTitle}{Anomaly detection for the real-time identification of gamma-ray transients}
+\newcommand{\myTitle}{Real-Time Anomaly Detection of Gamma-Ray Bursts for the Cherenkov Telescope Array using Deep Learning}
 \newcommand{\mySubmissionYear}{2023}
 \newcommand{\mySubmissionMonth}{January}
 \newcommand{\mySubmissionDay}{31}
@@ -36,7 +36,7 @@
 \newcommand{\myBirthPlace}{Bagno a Ripoli (Firenze)}
 
 % Primary supervisor:
-\newcommand{\myProfTitle}{Dr.}
+\newcommand{\myProfTitle}{Dott.}
 \newcommand{\myProfFirstName}{Andrea}
 \newcommand{\myProfLastName}{Bulgarelli}
 \newcommand{\myProfWebsite}{}
@@ -66,23 +66,23 @@
   \pagenumbering{roman}
   
   \singlespacing
-  %\input{text/ch0-title}
-  %\input{text/ch0-backside}
+  \input{text/ch0-title}
+  \input{text/ch0-backside}
   
-  %\onehalfspacing
+  \onehalfspacing
   \input{text/ch0-contents}
   
-  %\chapter*{Abstract}
-  %\addcontentsline{toc}{chapter}{Abstract}
-  %\input{text/ch0-abstract}
+  \chapter*{Abstract}
+  \addcontentsline{toc}{chapter}{Abstract}
+  \input{text/ch0-abstract}
   
-  %\chapter*{Statement of Authorship}
-  %\addcontentsline{toc}{chapter}{Declaration of Authorship}
-  %\input{text/ch0-declaration}
+  \chapter*{Statement of Authorship}
+  \addcontentsline{toc}{chapter}{Declaration of Authorship}
+  \input{text/ch0-declaration}
   
-  %\input{text/ch0-acknowledgements}
-  %\input{text/ch0-publications}
-  %\input{text/ch0-dedication}
+  \input{text/ch0-acknowledgements}
+  \input{text/ch0-publications}
+  \input{text/ch0-dedication}
   
   \cleardoublepage
   \pagestyle{scrheadings}
@@ -93,15 +93,15 @@
   \input{text/ch0-outline} 
   \newpage
 
-  \chapter{Gamma-ray astronomy and the Cherenkov Telescope Array Observatory}\label{c:Background}
+  \chapter{Gamma-ray astronomy and the Cherenkov Telescope Array Observatory}\label{c:Background-Gamma-Ray-Astronomy}
   \input{text/ch1-introduction-gamma-ray-astronomy}
   \newpage
  
-  \chapter{Anomaly detection for timeseries data}\label{c:Background-2}
+  \chapter{Anomaly detection for timeseries data}\label{c:Background-Anomaly-Detection}
   \input{text/ch2-introduction-anomaly-detection}
   \newpage
    
-  \chapter{Anomaly detection method to perform source detection}\label{c:Contribution-1}
+  \chapter{Anomaly detection method to perform source detection}\label{c:Contribution}
   \input{text/ch3-proposed-method} 
   \newpage
 
@@ -113,15 +113,17 @@
   \input{text/ch5-conclusions}
   \newpage
   
-  
-  %\chapter{Appendix A}\label{c:AppendixA}
-  %\input{text/appendixA}
+  \chapter{Appendix A}\label{c:AppendixA}
+  \input{text/ch6-appendix-a.tex}
+  \newpage
 
-  %\chapter{Appendix B}\label{c:AppendixB}
-  %\input{text/appendixB}
+  \chapter{Appendix B}\label{c:AppendixB}
+  \input{text/ch7-appendix-b.tex}
+  \newpage
 
-  %\chapter{Appendix C}\label{c:AppendixC}
-  %\input{text/appendixC}
+  \chapter{Appendix C}\label{c:AppendixC}
+  \input{text/ch8-appendix-c.tex}
+  \newpage
 
   
   \cleardoublepage

@@ -4,15 +4,13 @@
 \section{Contributions}
 \label{s:Contributions}
 
-Our key contributions include:
+Our key contributions include the following:
 
 \begin{enumerate}
 
-  \item \hinttext{List all important contributions that you intend to make.}
+  \item An anomaly detection method to perform real-time source detection of $\gamma$-ray transients has been developed.
   
-  \item \hinttext{Be brief!}
-  
-  \item \hinttext{The number of contributions does not have to match the number of contribution chapters.}
+  \item This work contributed to developing the Science Alert Generation system in the context of the Array Control and Data Acquisition control software of the Cherenkov Telescope Array Observatory.
 
 \end{enumerate}
 
@@ -23,12 +21,16 @@ The remainder of this thesis is organized as follows.
 
 \begin{description}
 
-  \item[Chapter \ref{s:Gamma-Ray-Astronomy}] gives the reader the required background to understand the context of this work. \autoref{s:Gamma-Ray-Astronomy} discusses $\gamma$-ray astronomy and ground-based $\gamma$-ray imaging with Cherenkov telescopes. \autoref{s:CTA} introduces the Cherenkov Telescope Array Observatory (CTAO), the science goals, an overview of the telescope array, and its associated computing and software systems, including the Science Alert Generation System. Finally, it explores the scientific use cases of serendipitous discoveries and follow-up observations linked to the real-time detection of transient events. \autoref{s:gamma-ray-data-analysis} covers gamma-ray data analysis techniques, including the full field of view maximum likelihood and the aperture photometry. It also describes the Li\&Ma significance estimation method in the context of a reflected regions background estimation algorithm. Finally, \autoref{s:Gamma-Ray-Bursts} covers the study of $\gamma$-ray bursts, the transient phenomena this work is focused on.
+  \item[Chapter \ref{c:Background-Gamma-Ray-Astronomy}] gives the reader the required background to understand the context of this work. \autoref{s:Gamma-Ray-Astronomy} discusses $\gamma$-ray astronomy and ground-based $\gamma$-ray imaging with Cherenkov telescopes. \autoref{s:CTA} introduces the Cherenkov Telescope Array Observatory (CTAO), the science goals, an overview of the telescope array, and its associated computing and software systems, including the Science Alert Generation System. Finally, it explores the scientific use cases of serendipitous discoveries and follow-up observations linked to the real-time detection of transient events. \autoref{s:gamma-ray-data-analysis} covers gamma-ray data analysis techniques, including the full field of view maximum likelihood and the aperture photometry. It also describes the Li\&Ma significance estimation method in the context of a reflected regions background estimation algorithm. Finally, \autoref{s:Gamma-Ray-Bursts} covers the study of $\gamma$-ray bursts, the transient phenomena this work is focused on.
   
-  \item[Chapter \ref{s:anomaly-detection}] introduces the concept of anomaly detection for time series analysis, discussing the major existing contributions to the field. \autoref{s:anomaly-detection} introduces the definition and properties of time series data and the concept of anomaly. It discusses the several types of techniques existing in the scientific literature, classifying them using a taxonomy. \autoref{s:ad-with-dl} focuses on anomaly detection techniques based on deep learning. The method developed in this work belongs to this category. \autoref{ss:ad-astrophysics} lists several contributions made in the astrophysics field, proving that these techniques are becoming increasingly popular for analyzing astrophysical data.
+  \item[Chapter \ref{c:Background-Anomaly-Detection}] introduces the concept of anomaly detection for time series analysis, discussing the major existing contributions to the field. \autoref{s:anomaly-detection} introduces the definition and properties of time series data and the concept of anomaly. It discusses the several types of techniques existing in the scientific literature, classifying them using a taxonomy. \autoref{s:ad-with-dl} focuses on anomaly detection techniques based on deep learning. The method developed in this work belongs to this category. \autoref{ss:ad-astrophysics} lists several contributions made in the astrophysics field, proving that these techniques are becoming increasingly popular for analyzing astrophysical data.
 
 
-  \item[Chapter \ref{s:contribution}] presents the proposed method to address the real-time source detection problem introduced in \autoref{s:sag}. This chapter is organized as follows. \autoref{s:contribution} will describe the proposed anomaly detection technique. It presents the data pipeline that has been developed to generate input data, the deep learning architectures that have been investigated, and the training process. The evaluation of the models will be addressed in \autoref{s:Experiment-Setup}. \autoref{ss:p-values} will describe the p-value analysis to associate each positive classification with a gaussian statistical significance. \autoref{s:non-stationary-settings} will investigate several problems that can arise during the telescope observations and how those problems can affect the proposed system.
+  \item[Chapter \ref{c:Contribution}] presents the proposed method to address the real-time source detection problem introduced in \autoref{s:sag}. This chapter is organized as follows. \autoref{s:contribution} will describe the proposed anomaly detection technique. It presents the data pipeline that has been developed to generate input data, the deep learning architectures that have been investigated, and the training process. The evaluation of the models will be addressed in \autoref{s:Experiment-Setup}. \autoref{ss:p-values} will describe the p-value analysis to associate each positive classification with a gaussian statistical significance. \autoref{s:non-stationary-settings} will investigate several problems that can arise during the telescope observations and how those problems can affect the proposed system.
+
+  \item[Chapter \ref{c:Results}] presents the results of the p-value analyses and performance benchmarks. \autoref{s:Experiment-Setup} reintroduces the scientific use cases and the assumptions made in these scenarios. It then describes the test set generation process. \autoref{s:p-values-results} presents the results of the p-value analysis. \autoref{s:architectures-comparison} shows a comparison between the two investigated autoencoder architectures. \autoref{s:ad-vs-lima} outlines the performances of the proposed anomaly detection method against the Li\&Ma standard technique. The key performance indicators used for the comparison are introduced. The results for both use cases of serendipitous discoveries and follow-up observations are presented in the short-term and very short-term scenarios.
+
+  \item[Chapter \ref{c:Conclusions}] summarizes the key outcomes from my study to reach final conclusions. Additionally, it highlights potential areas for improvement, including further testing and feature developments. Lastly, the future outlook for this research will be discussed at the conclusion of the chapter.
 
 \end{description}
 

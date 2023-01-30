@@ -1,7 +1,52 @@
-\section{Anomaly detection method}
-\label{c:conclusions}
-This method overcomes the limitations of the analysis techniques described in \autoref{ss:ffov-ml} and \autoref{ss:li-ma}. No assumption on the background model needs to be assumed: the semi-unsupervised learning approach enables the automatic modeling of the background since only background data is used to train the autoencoder. In addition, no hypothesis on the source model needs to be assumed: the anomaly detection approach works by detecting which samples deviate significantly from the normal data. Since there's no need to model the sources, we can overcome the limitation of unrepresentative training data sets. This technique can be applied in a streaming context, identifying outliers in real time as soon as new data points are available. This means that this method can work with overlapping sub-sequences, drastically reducing the time to perform inference. In contrast, the Li\&Ma technique needs to wait for further data since it is limited by the assumption of the statistical independence of the time bins under analysis. Furthermore, using an integration time equal to 1 second, the proposed technique can achieve faster inference, pushing the boundaries of short-term analysis. This is possible because there's no limitation on the minimum amount of signal the method needs to process, overcoming the second limitation of the Li\&Ma technique. Performing real-time analysis of each second of data is also possible because the computational cost of the method is very low due to the autoencoder's simple architecture and the data's size. In addition, multiple models can run in parallel, enabling multi-timescales analysis. According to the expected properties of the signals to detect, the integration time value and the length of the sub-sequences can be chosen accordingly. 
+\begin{chapabstract}
+\small{
+This chapter summarizes the key outcomes from my study to reach final conclusions. Additionally, it highlights potential areas for improvement, including further testing and feature developments. Lastly, the future outlook for this research will be discussed at the end of this chapter.
+}\\
+\begin{center}
+\noindent\makebox[0.8\linewidth]{\rule{0.66\paperwidth}{0.4pt}}
+\end{center}
+\vspace{1cm}
+\end{chapabstract}
+
+
+\section{Results and contributions}
+\label{s:contributions}
+The following summary will show the main results and contributions to conclude the dissertation. 
+
+\begin{itemize}
+
+    \item In \autoref{c:Contribution}, we addressed the problem of real-time source detection in $\gamma$-ray astronomy using anomaly detection. To this end, we developed a deep learning-based method for detecting anomalous time series data from Cherenkov Telescope Array Observatory (CTAO) observations. Efficient data processing pipelines to produce train and test (simulated) data sets and other utility scripts and notebooks have also been developed. The source code can be found in \cite{Baroncelli_2023}.
+
+    \item A statistical analysis pipeline to associate the predictions of the deep learning models with a statistical confidence level has been developed. Results are shown in \autoref{s:p-values-results}. Since this analysis requires a large sample of simulation data, the code has been developed to be as efficient as possible.
+        
+    \item \autoref{c:Results} evaluates the performance of an anomaly detection method in the context of Gamma-Ray Bursts (GRBs) detection for the Cherenkov telescope array. The method is compared against the Li\&Ma technique in two scenarios of serendipitous discoveries and follow-up observations in two different settings with short exposure times (5 sec and 1 sec). The assumption of a blind-search analysis to localize candidate sources in a fixed time of 10 seconds has been made. In the short exposure time of 5 seconds scenario, the Li\&Ma technique proves greater robustness, detecting most GRBs as shown in \autoref{f:serendipitous-discoveries-itime-5} and \autoref{fig:follow-up-itime-5}. However, in the serendipitous discovery scenario, the anomaly detection method proves, on average, faster in detecting GRBs compared to Li\&Ma, as shown by detection delay metrics in \autoref{tab:dd-itime-5-common}. 
+    With a very short exposure time of 1 second, both techniques face limitations with reduced photon counts. However, the anomaly detection method with recurrent layers is more robust overall than Li\&Ma and still performs faster detections on average, as shown by \autoref{f:serendipitous-discoveries-itime-1} and \autoref{tab:dd-itime-1-common}.
+
+    \item The method does \textbf{not} rely on the assumptions that the background and source models are accurate representations of the data. This would limit its ability to detect sources that do not conform to these models, especially challenging in the real-time context in which pipelines perform under degraded conditions. The inference of the autoencoder is very fast suited for real-time analysis. Finally, the proposed method is not limited by the statistical independence requirement of the analysis bins nor by a minimum number of photon counts to perform analysis. For these reasons, the proposed method overcomes the limitation of the Full Field of View Maximum Likelihood and Li\&Ma techniques.
+    
+    \item The nature of the proposed method is flexible enough to allow different analysis settings, with different exposure times and temporal bin time spans, to allow real-time search for transient events on multiple time scales.  
+    
+    \item Overall, this study makes a significant contribution to the field of astrophysics by demonstrating the effectiveness of deep learning-based anomaly detection techniques for real-time source detection in $\gamma$-ray astronomy. 
+    
+\end{itemize}
 
 
 \section{Outlook and future work}
-Give an outlook regarding your expectations for the overall development of your chosen field of research. List topics that were not covered by your work. Identify and discuss potential avenues for follow-up research that you consider worthwhile pursuing.
+
+The proposed method has shown promising results, but there is still room for improvement. Additional implementation and examination could enhance the understanding of the estimated  performances and refine the method. 
+
+\begin{itemize}
+    
+    \item The method should be extensively tested, relaxing the assumptions that have been made. Concerning the blind-search analysis, we can have multiple candidates' regions of interest detected at different times with different significance levels in the real-world scenario. The time delays in the context of the follow-up observation use case have been assumed fixed. A more in-depth study with a randomized time delay (or something more similar to the current typical GW alert latency) would improve the estimate of the method's performance.
+
+    \item Another future improvement is to evaluate the visibility of the GRB events. In this study, the information on the spatial localization of the events was not possible to infer, since the trigger times i.e., the timestamp associated with the start of the GRB events, were not available. Hence, for each GRB simulation, the same sky coordinates have been considered. As a consequence, a single instrument response function was sufficient because only one background level was considered. Having access to the trigger times would allow visibility studies and would require to exploit of different IRFs, introducing changes in the observing condition.
+    
+    \item It is important to evaluate the post-trial probability to provide a more robust estimate of the method's performance. 
+
+    \item It is crucial to test the method on real data and address the non-stationary settings of online observations.
+    
+    \item It would be valuable to test the proposed method with more transient phenomena, other than GRBs, on multiple time scales. This would further demonstrate the versatility and effectiveness of the method.
+
+    \item The system can be integrated within the Science Alert Generation system of CTAO and deployed on the onsite computing cluster at La Palma. This would provide valuable insights into the method's performance in a real-world setting and be another valuable tool for discovering new transient events in real-time. 
+    
+\end{itemize}
