@@ -36,21 +36,21 @@
 \newcommand{\myBirthPlace}{Bagno a Ripoli (Firenze)}
 
 % Primary supervisor:
-\newcommand{\myProfTitle}{Dott.}
-\newcommand{\myProfFirstName}{Andrea}
-\newcommand{\myProfLastName}{Bulgarelli}
-\newcommand{\myProfWebsite}{}
+\newcommand{\myProfTitle}{Prof.}
+\newcommand{\myProfFirstName}{Antonio}
+\newcommand{\myProfLastName}{Zoccoli}
+\newcommand{\myProfWebsite}{https://www.unibo.it/sitoweb/antonio.zoccoli}
 
 % Co-supervisor:
-\newcommand{\myOtherProfTitle}{Prof.}
-\newcommand{\myOtherProfFirstName}{Antonio}
-\newcommand{\myOtherProfLastName}{Zoccoli}
-\newcommand{\myOtherProfWebsite}{https://www.unibo.it/sitoweb/antonio.zoccoli}
+\newcommand{\myOtherProfTitle}{Dott.}
+\newcommand{\myOtherProfFirstName}{Andrea}
+\newcommand{\myOtherProfLastName}{Bulgarelli}
+\newcommand{\myOtherProfWebsite}{}
 
 % University related:
 \newcommand{\myDepartment}{Dipartimento di Fisica e Astronomia}
-\newcommand{\myFaculty}{College of Science, Health and Engineering}
-\newcommand{\mySchool}{Data Science and Computation}
+\newcommand{\myFaculty}{}
+\newcommand{\mySchool}{Ph.D. course in Data Science and Computation}
 \newcommand{\myUni}{Università di Bologna}
 % -----------------------------------------------------------------------------
 
@@ -75,15 +75,21 @@
   \chapter*{Abstract}
   \addcontentsline{toc}{chapter}{Abstract}
   \input{text/ch0-abstract}
-  
-  \chapter*{Statement of Authorship}
-  \addcontentsline{toc}{chapter}{Declaration of Authorship}
-  \input{text/ch0-declaration}
+  \newpage
+
+  \chapter*{Sommario}
+  \addcontentsline{toc}{chapter}{Abstract}
+  \input{text/ch0-abstract-ita}
+  \newpage
+
   
   \input{text/ch0-acknowledgements}
-  \input{text/ch0-publications}
-  \input{text/ch0-dedication}
+  \newpage
+
   
+  \input{text/ch0-dedication}
+  \newpage
+
   \cleardoublepage
   \pagestyle{scrheadings}
   \pagenumbering{arabic}
@@ -134,6 +140,9 @@
   \input{text/app-bibliography}
   \cleardoublepage
 
+  \newpage
+  \input{text/ch0-publications}
+  
   \pagestyle{empty}
   \onehalfspacing
   

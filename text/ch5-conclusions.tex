@@ -15,7 +15,7 @@ The following summary will show the main results and contributions to conclude t
 
 \begin{itemize}
 
-    \item In \autoref{c:Contribution}, we addressed the problem of real-time source detection in $\gamma$-ray astronomy using anomaly detection. To this end, we developed a deep learning-based method for detecting anomalous time series data from Cherenkov Telescope Array Observatory (CTAO) observations. Efficient data processing pipelines to produce train and test (simulated) data sets and other utility scripts and notebooks have also been developed. The source code can be found in \cite{Baroncelli_2023}.
+    \item In \autoref{c:Contribution}, we addressed the problem of real-time source detection in gamma-ray astronomy using anomaly detection. To this end, we developed a deep learning-based method for detecting anomalous time series data from Cherenkov Telescope Array Observatory (CTAO) observations. Efficient data processing pipelines to produce train and test (simulated) data sets and other utility scripts and notebooks have also been developed. The source code can be found in \cite{Baroncelli_2023}.
 
     \item A statistical analysis pipeline to associate the predictions of the deep learning models with a statistical confidence level has been developed. Results are shown in \autoref{s:p-values-results}. Since this analysis requires a large sample of simulation data, the code has been developed to be as efficient as possible.
         
@@ -26,7 +26,7 @@ The following summary will show the main results and contributions to conclude t
     
     \item The nature of the proposed method is flexible enough to allow different analysis settings, with different exposure times and temporal bin time spans, to allow real-time search for transient events on multiple time scales.  
     
-    \item Overall, this study makes a significant contribution to the field of astrophysics by demonstrating the effectiveness of deep learning-based anomaly detection techniques for real-time source detection in $\gamma$-ray astronomy. 
+    \item Overall, this study makes a significant contribution to the field of astrophysics by demonstrating the effectiveness of deep learning-based anomaly detection techniques for real-time source detection in gamma-ray astronomy. 
     
 \end{itemize}
 
@@ -39,7 +39,7 @@ The proposed method has shown promising results, but there is still room for imp
     
     \item The method should be extensively tested, relaxing the assumptions that have been made. Concerning the blind-search analysis, we can have multiple candidates' regions of interest detected at different times with different significance levels in the real-world scenario. The time delays in the context of the follow-up observation use case have been assumed fixed. A more in-depth study with a randomized time delay (or something more similar to the current typical GW alert latency) would improve the estimate of the method's performance.
 
-    \item Another future improvement is to evaluate the visibility of the GRB events. In this study, the information on the spatial localization of the events was not possible to infer, since the trigger times i.e., the timestamp associated with the start of the GRB events, were not available. Hence, for each GRB simulation, the same sky coordinates have been considered. As a consequence, a single instrument response function was sufficient because only one background level was considered. Having access to the trigger times would allow visibility studies and would require to exploit of different IRFs, introducing changes in the observing condition.
+    \item Another future improvement is to evaluate the visibility of the GRB events. In this study, the information on the spatial localization of the events was not possible to infer, since the trigger times i.e., the timestamp associated with the start of the GRB events, were not available. Hence, for each GRB simulation, the same sky coordinates have been considered. As a consequence, a single instrument response function was sufficient because only one background level was considered. Having access to the trigger times would allow visibility studies and would require the use of different IRFs, introducing changes in the observing condition.
     
     \item It is important to evaluate the post-trial probability to provide a more robust estimate of the method's performance. 
 
