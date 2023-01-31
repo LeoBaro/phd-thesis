@@ -170,24 +170,48 @@ The null hypothesis in this context is represented by the absence of the GRB eve
 
 To reach the desired $5\sigma$ level, about $1e^8$ trials need to be simulated and transformed into sub-sequences fed to the autoencoder to obtain the anomaly scores. The same simulation settings are used to generate the training test for the autoencoder models. Hence, more details about the data set generation for the p-value analysis will be provided in \autoref{ss:training}. There're only two differences concerning the simulation parameters used to generate the training set: the observation time is limited to 100 seconds, and the number of simulated trials is $1e^8$. This process is very computing intensive and has to be repeated several times each time a new model is deployed in production. The latter number is why the simulation script provided by \cite{dipiano2022ctasagsci} has been improved and optimized. As outlined in \autoref{ss:dl3-simulator}, starting from this data set, it is possible to perform different photometry analyses and extract sub-sequences with different lengths. For this reason, a script exploiting batch parallelization with Slurm has been developed to load a trained autoencoder, apply the photometry analysis, generate the sub-sequences, and perform inferences. In particular, each Slurm job takes a batch of photon lists, integrates the photon counts, computes the flux, extracts the time series, scales the data, and performs inference, measuring the anomaly score. In order to guarantee the statistical independence of these measures, from each photon list, only one sub-sequence is generated and given to the autoencoder. This is why the observation time was limited to 100 seconds. The time took to process $1e^7$ trials (about $3.5 TB$ of data), using 100 jobs on 60 Intel(R) Xeon(R) Gold 6240 CPU  cores, was about 48 hours. The computational bottleneck was due to the network filesystem that limited the data transfer from a SATA hard drive. 
 
+In order to find the corresponding p-value for a given sigma level, first of all, we defined the two-tailed probability corresponding to the sigma level of choice. For example, if $sigma=3$, the corresponding two-tailed probability is $p=99.73\%$. The p-value is given by the survival function: $(1-p)=0.0027$. This p-value describes the probability of having a measure outside the  $\pm3\sigma$. Since this use case is constructed on half of a symmetrical distribution, the one-tailed p-value of that probability must be computed. Hence, the previous p-value must be halved, obtaining $(1-p)/2=0.00135$. The p-value is then mapped to a threshold value. On the contrary, if we want to know the sigma level of a particular threshold, we take the corresponding p-value and find the inverse cumulative distribution function relative to that p-value. Again, since the normal distribution is symmetrical, the absolute value is the number of standard deviations rather than  $\pm n\sigma$. if the threshold value is not present in the table, it can be interpolated within the closest two values along with the corresponding p-values interpolation.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % QUESTA PARTE E' DA FINIRE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Inference}
+\section{Inference}
 \label{ss:inference}
-% How the techinque works in productions
 
-%% NO! io voglio sapere dall'anomaly score come si ottiene il sigma!!
+% Plot predictions not anomalous and anomalous
+% SI ottiene MSE
+% Si calcola sigma
+% Si ripete fino alla fine della timeseries
+\autoref{fig:cnn-predictions-itime-5}
 
-In order to find the corresponding p-value for a given sigma level, first of all, we defined the two-tailed probability corresponding to the sigma level of choice. For example, if $sigma=3$, the corresponding two-tailed probability is $p=99.73\%$. The p-value is given by the survival function: $(1-p)=0.0027$. This p-value describes the probability of having a measure outside the  $\pm3\sigma$. Since this use case is constructed on half of a symmetrical distribution, the one-tailed p-value of that probability must be computed. Hence, the previous p-value must be halved, obtaining $(1-p)/2=0.00135$. The p-value is then mapped to a threshold value. On the contrary, if we want to know the sigma level of a particular threshold, we take the corresponding p-value and find the inverse cumulative distribution function relative to that p-value. Again, since the normal distribution is symmetrical, the absolute value is the number of standard deviations rather than  $\pm n\sigma$. if the threshold value is not present in the table, it can be interpolated within the closest two values along with the corresponding p-values interpolation.  
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figures/training/cnn_epoch_5_plot_0_predictions_itime_5.png}
+\caption{ }
+\label{fig:cnn-predictions-itime-5}
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figures/experiments/detection_plots/detection_plot_run0398_ID000008_testset_e.png}
+\caption{ }
+\label{fig:detection_plot}
+\end{figure}
+
 
 
 \section{System design}
 \label{s:system-design}
 
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figures/method/systemdesign1.png}
+\caption{ }
+\label{fig:system-design-1}
+\end{figure}
 
-\section{Non-stationary settings and Online Learning}
+\section{Non-stationary settings}
 \label{s:non-stationary-settings}
 During inference, the model will process the real-time data generated by the telescopes during an observation. As explained in \autoref{s:anomaly-detection}, the stationarity property of the stochastic process that generates the data can be invalidated by concept drifts. This can be a significant issue as it can negatively impact the performance of a machine learning model trained under a certain statistical distribution of input data. Neural networks are particularly vulnerable to concept drift, as they rely on the assumption that the data distribution remains constant during training and inference. In the presence of a concept drift, the model makes predictions based on outdated information, leading to decreased accuracy. 
 
